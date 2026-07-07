@@ -24,7 +24,7 @@ push to main  →  GitHub Actions builds image  →  pushes to GHCR  →  Watcht
    cd Glacianav_CRM
    cp .env.example .env
    # edit .env — POSTGRES_PASSWORD, SESSION_SECRET (openssl rand -base64 32),
-   # TUNNEL_TOKEN, and the MS_* values if you use Microsoft 365 SSO
+   # APP_ORIGIN, TUNNEL_TOKEN, and the MS_* values if you use Microsoft 365 SSO
    ```
 3. **Cloudflare Tunnel:** in the Zero Trust dashboard create a tunnel, add a public
    hostname for your domain pointing at `http://web:3000`, and copy the tunnel token
@@ -58,6 +58,10 @@ image changes. So: **commit → push → it's live in a minute or two.**
 Everything sensitive comes from `.env` (git-ignored):
 `SESSION_SECRET`, `POSTGRES_PASSWORD`, `TUNNEL_TOKEN`, `MS_CLIENT_SECRET`. The Microsoft
 client secret is **only** read from `MS_CLIENT_SECRET` — it is never stored in the database.
+
+Set `APP_ORIGIN` to the public HTTPS origin, for example
+`APP_ORIGIN=https://crm.glacianav.com`. Microsoft OAuth uses this to generate the
+callback URL behind Cloudflare Tunnel.
 
 `docker-compose.yml` requires `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, and
 `TUNNEL_TOKEN`. If any are missing, Compose stops before creating a broken stack. Keep

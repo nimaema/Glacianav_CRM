@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { getAppConfig, effectiveMicrosoft, microsoftReady } from "@/lib/app-config";
+import { publicOrigin } from "@/lib/public-origin";
 import { encrypt, SESSION_COOKIE, SESSION_MAX_AGE } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
@@ -14,7 +15,7 @@ function fail(origin: string, code: string) {
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
-  const origin = url.origin;
+  const origin = publicOrigin(req.url);
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
   const store = await cookies();

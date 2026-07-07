@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { getAppConfig, effectiveMicrosoft, microsoftReady } from "@/lib/app-config";
+import { publicOrigin } from "@/lib/public-origin";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
-  const origin = new URL(req.url).origin;
+  const origin = publicOrigin(req.url);
   const m = effectiveMicrosoft(await getAppConfig());
   if (!microsoftReady(m)) {
     return NextResponse.redirect(new URL("/login?error=sso_off", origin));
