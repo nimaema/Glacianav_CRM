@@ -57,8 +57,9 @@ services:
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      # Mount your docker config for private GHCR pulls (created by `docker login`)
-      - ${DOCKER_CONFIG_DIR:-~/.docker}/config.json:/config.json:ro
+      # For a PRIVATE GHCR image, first run `sudo docker login ghcr.io` (creates
+      # the file), then uncomment the next line so Watchtower can pull updates:
+      # - /root/.docker/config.json:/config.json:ro
     command: --label-enable --cleanup --rolling-restart --interval ${WATCHTOWER_INTERVAL:-60}
 
 volumes:
