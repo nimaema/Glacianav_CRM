@@ -1,0 +1,65 @@
+# Production stack: Next.js web + PostgreSQL + Cloudflare Tunnel + Watchtower.
+# Every value comes from the .env file next to this compose file.
+#
+#   1. Copy .env.example -> .env and fill it in
+#   2. docker login ghcr.io   (once, so the server can pull the private image)
+#   3. docker compose up -d
+#
+# On every push to main, GitHub Actions builds and publishes a new image to
+# GHCR; Watchtower notices it and redeploys `web` automatically.
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  web:
+    image: ${WEB_IMAGE:-ghcr.io/nimaema/glacianav_crm:latest}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      # Always talk to the db service on the compose network, regardless of
+      # what DATABASE_URL is set to in .env (which may target local dev).
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      NODE_ENV: production
+    expose:
+      - "3000"
+    labels:
+      # Only Watchtower-managed container in this stack
+      com.centurylinklabs.watchtower.enable: "true"
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    depends_on:
+      - web
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN}
+
+  watchtower:
+    image: containrrr/watchtower:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Mount your docker config for private GHCR pulls (created by `docker login`)
+      - ${DOCKER_CONFIG_DIR:-~/.docker}/config.json:/config.json:ro
+    command: --label-enable --cleanup --rolling-restart --interval ${WATCHTOWER_INTERVAL:-60}
+
+volumes:
+  pgdata:

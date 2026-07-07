@@ -1,0 +1,196 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+// Single-row workspace configuration (auth methods, SSO). id is always "singleton".
+model AppConfig {
+  id                    String  @id @default("singleton")
+  passwordLoginEnabled  Boolean @default(true)
+  microsoftEnabled      Boolean @default(false)
+  microsoftTenantId     String?
+  microsoftClientId     String?
+  microsoftClientSecret String?
+  ssoAllowedDomain      String?
+  ssoAutoProvision      Boolean @default(true)
+}
+
+model User {
+  id           String           @id @default(cuid())
+  name         String
+  email        String           @unique
+  passwordHash String
+  role         Role             @default(MEMBER)
+  color        String           @default("#0d9488")
+  notifyPrefs  Json? // { staleDays, followups, interviews }
+  contacts     Contact[]
+  notes        ValidationNote[]
+  activities   Activity[]
+}
+
+model Board {
+  id       String    @id @default(cuid())
+  name     String
+  groups   Group[]
+  statuses Status[]
+  contacts Contact[]
+}
+
+// A group = a customer segment (rows are grouped under it on the board).
+// One group per board is the Leads Inbox: unqualified names waiting to be promoted.
+model Group {
+  id       String    @id @default(cuid())
+  boardId  String
+  board    Board     @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  name     String
+  color    String
+  position Float
+  isInbox  Boolean   @default(false)
+  contacts Contact[]
+}
+
+enum LeadLabel {
+  HOT
+  WARM
+  COLD
+}
+
+enum StatusColumn {
+  STAGE
+  FOLLOWUP
+  PRIORITY
+  PROBLEM
+}
+
+enum ContactChannel {
+  EMAIL
+  LINKEDIN
+  PHONE
+}
+
+// Editable pill labels, Monday-style. One table serves all three pill columns.
+model Status {
+  id               String       @id @default(cuid())
+  boardId          String
+  board            Board        @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  column           StatusColumn
+  label            String
+  color            String
+  position         Float
+  isDefault        Boolean      @default(false)
+  stageContacts    Contact[]    @relation("stage")
+  followupContacts Contact[]    @relation("followup")
+  priorityContacts Contact[]    @relation("priority")
+  problemContacts  Contact[]    @relation("problem")
+}
+
+// One board row = one prospect in the validation funnel
+model Contact {
+  id              String           @id @default(cuid())
+  boardId         String
+  board           Board            @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  groupId         String
+  group           Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  position        Float
+  name            String
+  company         String?
+  email           String?
+  phone           String?
+  linkedin        String?
+  preferredChannel ContactChannel?
+  ownerId         String?
+  owner           User?            @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  stageId         String?
+  stage           Status?          @relation("stage", fields: [stageId], references: [id], onDelete: SetNull)
+  followupId      String?
+  followup        Status?          @relation("followup", fields: [followupId], references: [id], onDelete: SetNull)
+  problemId       String? // did the audience confirm the problem?
+  problem         Status?          @relation("problem", fields: [problemId], references: [id], onDelete: SetNull)
+  priorityId      String?
+  priority        Status?          @relation("priority", fields: [priorityId], references: [id], onDelete: SetNull)
+  painScore       Int?
+  interviewDate   DateTime?
+  currentSolution String?
+  nextStep        String?
+  leadLabel       LeadLabel? // only meaningful while the contact sits in the inbox
+  tags            ContactTag[]
+  notes           ValidationNote[]
+  activities      Activity[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([groupId, position])
+}
+
+enum NoteType {
+  INTERVIEW
+  DEMO
+  SURVEY
+  CHAT
+}
+
+enum ActivityType {
+  CREATED
+  STAGE
+  FIELD
+  NOTE
+  MOVED
+}
+
+// Per-contact history feed shown in the item drawer timeline
+model Activity {
+  id        String       @id @default(cuid())
+  contactId String
+  contact   Contact      @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  type      ActivityType
+  detail    String // human-readable, e.g. "Stage changed to Validated"
+  createdAt DateTime     @default(now())
+
+  @@index([contactId, createdAt])
+}
+
+// One structured interview record; a contact can have several
+model ValidationNote {
+  id            String   @id @default(cuid())
+  contactId     String
+  contact       Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  authorId      String?
+  author        User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  type          NoteType @default(INTERVIEW)
+  durationMin   Int?
+  interviewDate DateTime @default(now())
+  triggerEvent  String?
+  workarounds   String?
+  costOfProblem String?
+  quotes        String?
+  body          String?
+  actionItems   String?
+  createdAt     DateTime @default(now())
+}
+
+// Needs / problem themes — the heart of validation pattern-spotting
+model Tag {
+  id       String       @id @default(cuid())
+  name     String       @unique
+  contacts ContactTag[]
+}
+
+model ContactTag {
+  contactId String
+  contact   Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  tagId     String
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([contactId, tagId])
+}

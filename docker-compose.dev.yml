@@ -1,0 +1,22 @@
+# Local development database only. The full 3-service production stack
+# (web + db + cloudflared tunnel) lands in docker-compose.yml at Step 5.
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: crm-glacianav-dev-db
+    environment:
+      POSTGRES_USER: crm
+      POSTGRES_PASSWORD: crm_dev_password
+      POSTGRES_DB: crm
+    ports:
+      - "5434:5432"
+    volumes:
+      - crm_dev_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crm -d crm"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  crm_dev_pgdata:
