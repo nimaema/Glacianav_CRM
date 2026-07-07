@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/actions/auth";
 import { getAppConfig, microsoftEnvStatus } from "@/lib/app-config";
 import { AdminConsole, type SsoState } from "@/components/admin/admin-console";
+import { EmptyBoardState } from "@/components/board/empty-board-state";
 
 export const dynamic = "force-dynamic";
 
@@ -25,11 +26,7 @@ export default async function AdminPage() {
   ]);
 
   if (!data) {
-    return (
-      <div className="flex flex-1 items-center justify-center">
-        <p className="text-[13px] text-muted-foreground">No board found.</p>
-      </div>
-    );
+    return <EmptyBoardState isAdmin />;
   }
 
   const env = microsoftEnvStatus();

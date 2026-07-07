@@ -29,6 +29,57 @@ async function assertAdmin() {
   }
 }
 
+export async function bootstrapWorkspace() {
+  await assertAdmin();
+  const existing = await prisma.board.findFirst({ select: { id: true } });
+  if (existing) return;
+
+  await prisma.$transaction(async (tx) => {
+    await tx.appConfig.upsert({
+      where: { id: "singleton" },
+      update: {},
+      create: { id: "singleton" },
+    });
+
+    const board = await tx.board.create({ data: { name: "Customer Validation" } });
+
+    await tx.group.create({
+      data: {
+        boardId: board.id,
+        name: "Leads Inbox",
+        color: "#0d9488",
+        position: 1,
+        isInbox: true,
+      },
+    });
+
+    await tx.status.createMany({
+      data: [
+        { boardId: board.id, column: "STAGE", label: "Not Contacted", color: "#64748b", position: 1, isDefault: true },
+        { boardId: board.id, column: "STAGE", label: "Reached Out", color: "#2563eb", position: 2 },
+        { boardId: board.id, column: "STAGE", label: "Scheduled", color: "#7c3aed", position: 3 },
+        { boardId: board.id, column: "STAGE", label: "Interviewed", color: "#b45309", position: 4 },
+        { boardId: board.id, column: "STAGE", label: "Validated", color: "#15803d", position: 5 },
+        { boardId: board.id, column: "STAGE", label: "Not a Fit", color: "#dc2626", position: 6 },
+        { boardId: board.id, column: "FOLLOWUP", label: "No follow-up", color: "#57534e", position: 1, isDefault: true },
+        { boardId: board.id, column: "FOLLOWUP", label: "Waiting reply", color: "#b45309", position: 2 },
+        { boardId: board.id, column: "FOLLOWUP", label: "Nudge again", color: "#2563eb", position: 3 },
+        { boardId: board.id, column: "FOLLOWUP", label: "Send summary", color: "#7c3aed", position: 4 },
+        { boardId: board.id, column: "FOLLOWUP", label: "Book next call", color: "#15803d", position: 5 },
+        { boardId: board.id, column: "PRIORITY", label: "Low", color: "#64748b", position: 1 },
+        { boardId: board.id, column: "PRIORITY", label: "Medium", color: "#b45309", position: 2, isDefault: true },
+        { boardId: board.id, column: "PRIORITY", label: "High", color: "#dc2626", position: 3 },
+        { boardId: board.id, column: "PROBLEM", label: "Not asked", color: "#64748b", position: 1, isDefault: true },
+        { boardId: board.id, column: "PROBLEM", label: "Confirmed", color: "#15803d", position: 2 },
+        { boardId: board.id, column: "PROBLEM", label: "Weak signal", color: "#b45309", position: 3 },
+        { boardId: board.id, column: "PROBLEM", label: "Rejected", color: "#dc2626", position: 4 },
+      ],
+    });
+  });
+
+  revalidatePath("/", "layout");
+}
+
 async function log(contactId: string, type: ActivityType, detail: string) {
   await prisma.activity.create({
     data: { contactId, userId: await actorId(), type, detail },

@@ -31,7 +31,9 @@ push to main  →  GitHub Actions builds image  →  pushes to GHCR  →  Watcht
    into `TUNNEL_TOKEN`.
 4. **Authenticate to GHCR** so the server can pull the image:
    ```bash
-   echo $GHCR_PAT | docker login ghcr.io -u nimaema --password-stdin
+   sudo rm -rf /root/.docker/config.json  # only needed if this path was accidentally created as a directory
+   sudo mkdir -p /root/.docker
+   echo $GHCR_PAT | sudo docker login ghcr.io -u nimaema --password-stdin
    ```
    (Or make the GHCR package public and skip this.)
 5. **Start it:**
@@ -56,6 +58,15 @@ image changes. So: **commit → push → it's live in a minute or two.**
 Everything sensitive comes from `.env` (git-ignored):
 `SESSION_SECRET`, `POSTGRES_PASSWORD`, `TUNNEL_TOKEN`, `MS_CLIENT_SECRET`. The Microsoft
 client secret is **only** read from `MS_CLIENT_SECRET` — it is never stored in the database.
+
+`docker-compose.yml` requires `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, and
+`TUNNEL_TOKEN`. If any are missing, Compose stops before creating a broken stack. Keep
+`POSTGRES_PASSWORD` URL-safe for Prisma's generated `DATABASE_URL`; if it contains
+characters such as `@`, `/`, `:`, or `#`, URL-encode those characters or choose a new
+password.
+
+If Watchtower logs `client version 1.25 is too old`, keep `DOCKER_API_VERSION=1.40`
+in `.env` so it talks to the host Docker daemon with a supported API version.
 
 ## Local production test
 
