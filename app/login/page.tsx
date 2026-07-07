@@ -105,19 +105,6 @@ export default async function LoginPage(props: {
             microsoftEnabled={microsoftEnabled}
             ssoError={ssoError}
           />
-
-          {passwordLoginEnabled && (
-            <div className="mt-6 rounded-lg border border-border bg-muted/50 px-4 py-3 text-[12px] text-muted-foreground">
-              <p className="mb-1 font-semibold text-foreground">Demo accounts</p>
-              <p>
-                Admin <span className="font-mono text-foreground">nimaemami31@gmail.com</span> · Member{" "}
-                <span className="font-mono text-foreground">sara@glacianav.com</span>
-              </p>
-              <p>
-                Password <span className="font-mono text-foreground">glacianav</span>
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </div>
