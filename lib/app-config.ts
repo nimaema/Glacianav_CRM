@@ -50,8 +50,12 @@ export function microsoftEnvStatus() {
 // Safe subset for the (public) login page — no secrets.
 export async function getPublicAuthConfig() {
   const c = await getAppConfig();
+  const m = effectiveMicrosoft(c);
+  const ready = microsoftReady(m);
   return {
     passwordLoginEnabled: c.passwordLoginEnabled,
-    microsoftEnabled: microsoftReady(effectiveMicrosoft(c)),
+    microsoftEnabled: ready,
+    // Emails on this domain route to SSO in the email-first login flow.
+    ssoAllowedDomain: ready ? m.allowedDomain : null,
   };
 }
