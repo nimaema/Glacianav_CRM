@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { LockKeyhole, ShieldCheck } from "lucide-react";
 import { getSession } from "@/lib/session";
 import { getPublicAuthConfig } from "@/lib/app-config";
 import { LoginForm } from "@/app/login/login-form";
@@ -18,6 +17,49 @@ const SSO_ERRORS: Record<string, string> = {
   sso_nouser: "No account exists for that Microsoft user. Ask an admin to add you.",
 };
 
+/* Swisstopo-style cross-section: hairline elevation grid, ink profile,
+   red route to the summit. Decorative — foreshadows the dashboard Ascent. */
+function CrossSection() {
+  return (
+    <svg
+      viewBox="0 0 560 150"
+      className="w-full"
+      aria-hidden="true"
+      fill="none"
+    >
+      {/* elevation grid */}
+      {[20, 55, 90, 125].map((y) => (
+        <line key={y} x1="0" y1={y} x2="560" y2={y} stroke="var(--border)" strokeWidth="1" />
+      ))}
+      <text x="0" y="16" className="fill-muted-foreground font-mono" fontSize="9" letterSpacing="1">3400</text>
+      <text x="0" y="51" className="fill-muted-foreground font-mono" fontSize="9" letterSpacing="1">3000</text>
+      <text x="0" y="86" className="fill-muted-foreground font-mono" fontSize="9" letterSpacing="1">2600</text>
+      {/* terrain profile */}
+      <polyline
+        points="0,138 70,118 130,124 210,84 268,96 340,44 396,58 460,22 560,10"
+        stroke="var(--foreground)"
+        strokeWidth="1.5"
+      />
+      {/* the route */}
+      <polyline
+        points="0,138 130,124 268,96 396,58 460,22"
+        stroke="var(--signal)"
+        strokeWidth="2"
+      />
+      {[
+        [130, 124],
+        [268, 96],
+        [396, 58],
+      ].map(([x, y]) => (
+        <circle key={x} cx={x} cy={y} r="3" fill="var(--background)" stroke="var(--signal)" strokeWidth="2" />
+      ))}
+      {/* summit */}
+      <circle cx="460" cy="22" r="4" fill="var(--signal)" />
+      <text x="472" y="26" className="fill-foreground font-mono" fontSize="9" letterSpacing="1">VALIDATED</text>
+    </svg>
+  );
+}
+
 export default async function LoginPage(props: {
   searchParams: Promise<{ error?: string }>;
 }) {
@@ -29,89 +71,63 @@ export default async function LoginPage(props: {
   const ssoError = error ? (SSO_ERRORS[error] ?? "Sign-in failed. Please try again.") : null;
 
   return (
-    <main className="relative min-h-[100dvh] overflow-hidden bg-[#eef3f8] px-5 py-6 text-[#091426]">
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.62]"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(9,20,38,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(9,20,38,.045) 1px, transparent 1px)",
-          backgroundSize: "44px 44px",
-          maskImage: "linear-gradient(115deg, black, transparent 72%)",
-        }}
-        aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-[340px] bg-[linear-gradient(120deg,rgba(49,107,243,0.16),rgba(255,255,255,0)_44%),linear-gradient(180deg,rgba(255,255,255,0.78),rgba(255,255,255,0))]"
-        aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute top-28 right-[8%] hidden h-[520px] w-[38vw] rounded-[48px] border border-white/70 bg-white/24 shadow-[0_38px_110px_rgba(36,52,77,0.16)] backdrop-blur-xl lg:block"
-        aria-hidden="true"
-      />
-      <div className="relative mx-auto flex min-h-[calc(100dvh-3rem)] w-full max-w-6xl flex-col">
-        <header className="flex h-14 items-center justify-between">
-          <GlaciaNavBrand />
-          <div className="hidden items-center gap-2 rounded-full border border-white/80 bg-white/70 px-3 py-1.5 text-[12px] font-semibold text-[#536174] shadow-sm backdrop-blur sm:flex">
-            <ShieldCheck className="size-3.5 text-[#0051d5]" strokeWidth={2} />
-            Organization SSO
-          </div>
-        </header>
+    <main className="flex min-h-[100dvh] flex-col bg-background text-foreground">
+      {/* top strip */}
+      <header className="flex h-16 items-center justify-between border-b px-5 sm:px-8">
+        <GlaciaNavBrand />
+        <span className="type-legend hidden text-muted-foreground sm:block">
+          Organization access
+        </span>
+      </header>
 
-        <section className="grid flex-1 items-center gap-10 py-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(420px,0.7fr)]">
-          <div className="hidden max-w-xl lg:block">
-            <div className="mb-8 inline-flex size-12 items-center justify-center rounded-2xl border border-[#d9e2ef] bg-white shadow-sm">
-              <LockKeyhole className="size-5 text-[#0051d5]" strokeWidth={2} />
+      {/* poster + form */}
+      <section className="mx-auto grid w-full max-w-6xl flex-1 lg:grid-cols-[minmax(0,1fr)_minmax(400px,440px)]">
+        <div className="flex flex-col justify-between border-b px-5 pt-10 pb-8 sm:px-8 lg:border-r lg:border-b-0 lg:pt-16">
+          <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500">
+            <div className="flex items-center gap-3">
+              <span className="size-2.5 bg-signal" aria-hidden="true" />
+              <p className="type-legend text-muted-foreground">
+                Field records / Interviews / Evidence
+              </p>
             </div>
-            <h1 className="max-w-lg text-[44px] leading-[1.04] font-bold tracking-tight text-[#091426]">
-              Sign in to your validation workspace.
+            <h1 className="type-poster mt-5 max-w-xl text-[clamp(38px,5.5vw,64px)]">
+              Customer validation
             </h1>
-            <p className="mt-4 max-w-md text-[15px] leading-6 text-[#5f6b7a]">
-              Access interviews, follow-ups, and board settings through your approved workspace identity.
+            <p className="mt-5 max-w-md text-[14px] leading-6 text-muted-foreground">
+              Log interviews, confirm problems, and track every contact along
+              the route from first outreach to validated.
             </p>
-
-            <div className="mt-9 grid max-w-md grid-cols-2 gap-3">
-              <div className="rounded-2xl border border-white/75 bg-white/72 p-4 shadow-sm backdrop-blur">
-                <p className="text-[12px] font-semibold text-[#536174]">Authentication</p>
-                <p className="mt-2 text-[18px] font-bold text-[#091426]">Entra SSO</p>
-              </div>
-              <div className="rounded-2xl border border-white/75 bg-white/72 p-4 shadow-sm backdrop-blur">
-                <p className="text-[12px] font-semibold text-[#536174]">Workspace</p>
-                <p className="mt-2 text-[18px] font-bold text-[#091426]">Admin controlled</p>
-              </div>
-            </div>
           </div>
 
-          <div className="mx-auto w-full max-w-[390px]">
-            <div className="mb-7 lg:hidden">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/72 px-3 py-1.5 text-[12px] font-semibold text-[#536174] shadow-sm backdrop-blur">
-                <ShieldCheck className="size-3.5 text-[#0051d5]" strokeWidth={2} />
-                Organization SSO
-              </div>
+          <div className="mt-12 hidden lg:block">
+            <CrossSection />
+          </div>
+        </div>
+
+        <div className="flex flex-col justify-center px-5 py-10 sm:px-8 lg:py-16">
+          <div className="mx-auto w-full max-w-[360px] lg:mx-0">
+            <div className="flex items-baseline justify-between border-b border-foreground pb-3">
+              <h2 className="text-[22px] font-bold tracking-[-0.015em]">Sign in</h2>
+              <span className="type-legend text-muted-foreground">Members</span>
             </div>
-
-            <div className="rounded-[24px] border border-white/80 bg-white/82 p-6 shadow-[0_30px_90px_rgba(36,52,77,0.18)] backdrop-blur-xl">
-              <div className="mb-6">
-                <h2 className="text-[24px] leading-tight font-bold tracking-tight text-[#091426]">
-                  Welcome back
-                </h2>
-                <p className="mt-1.5 text-[13.5px] leading-5 text-[#667386]">
-                  Use your company SSO or workspace password.
-                </p>
-              </div>
-
+            <div className="mt-6">
               <LoginForm
                 passwordLoginEnabled={passwordLoginEnabled}
                 microsoftEnabled={microsoftEnabled}
                 ssoError={ssoError}
               />
             </div>
-
-            <p className="mt-4 text-center text-[12px] leading-5 text-[#758194]">
-              Authorized GlaciaNav workspace members only.
-            </p>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
+
+      {/* base rule */}
+      <footer className="flex h-12 items-center justify-between border-t px-5 sm:px-8">
+        <span className="type-legend text-muted-foreground">GlaciaNav CRM</span>
+        <span className="type-legend text-muted-foreground">
+          46.5583°N 7.9822°E · 3454 M
+        </span>
+      </footer>
     </main>
   );
 }

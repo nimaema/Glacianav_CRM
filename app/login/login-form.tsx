@@ -1,13 +1,12 @@
 "use client";
 
 import { useActionState } from "react";
-import { KeyRound, Mail, ShieldAlert } from "lucide-react";
 import { login } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 
 function MicrosoftMark() {
   return (
-    <svg viewBox="0 0 21 21" className="size-[18px]" aria-hidden="true">
+    <svg viewBox="0 0 21 21" className="size-4" aria-hidden="true">
       <rect x="1" y="1" width="9" height="9" fill="#f25022" />
       <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
       <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
@@ -27,70 +26,82 @@ export function LoginForm({
 }) {
   const [state, formAction, pending] = useActionState(login, null);
   const field =
-    "h-10 w-full rounded-lg border border-[#d7dfec] bg-white px-9 text-[13.5px] font-medium text-[#101827] outline-none transition placeholder:text-[#9aa4b2] hover:border-[#b9c7da] focus-visible:border-[#316bf3] focus-visible:ring-3 focus-visible:ring-[#316bf3]/15";
+    "h-11 w-full border border-input bg-background px-3 text-[14px] text-foreground outline-none transition-colors duration-150 placeholder:text-muted-foreground/70 hover:border-foreground/50";
   const error = state?.error ?? ssoError;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {error && (
-        <div className="flex gap-2.5 rounded-xl border border-[#f1b7b7] bg-[#fff5f5] px-3.5 py-3 text-[12.5px] leading-5 text-[#9f1d1d]">
-          <ShieldAlert className="mt-0.5 size-4 shrink-0" strokeWidth={2} />
-          <p>{error}</p>
+        <div className="flex border border-destructive/40" role="alert">
+          <span className="blaze" aria-hidden="true" />
+          <p className="px-3 py-2.5 text-[13px] leading-5 text-destructive">
+            {error}
+          </p>
         </div>
       )}
 
       {microsoftEnabled && (
-        <div className="flex justify-center">
-          <a
-            href="/api/auth/microsoft/start"
-            className="inline-flex h-10 items-center gap-2.5 rounded-full border border-[#c8d4e5] bg-white px-4 text-[13px] font-bold text-[#172033] shadow-[0_10px_24px_rgba(36,52,77,0.10)] transition hover:-translate-y-0.5 hover:border-[#aebfd7] hover:shadow-[0_14px_30px_rgba(36,52,77,0.14)] focus-visible:ring-3 focus-visible:ring-[#316bf3]/20 focus-visible:outline-none active:translate-y-0"
-          >
-            <MicrosoftMark />
-            Microsoft Entra SSO
-          </a>
-        </div>
+        <a
+          href="/api/auth/microsoft/start"
+          className="flex h-11 w-full items-center justify-center gap-2.5 border border-foreground text-[13.5px] font-semibold transition-colors duration-150 hover:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        >
+          <MicrosoftMark />
+          Continue with Microsoft 365
+        </a>
       )}
 
       {microsoftEnabled && passwordLoginEnabled && (
         <div className="flex items-center gap-3">
-          <span className="h-px flex-1 bg-[#dfe6ef]" />
-          <span className="text-[10.5px] font-bold tracking-[0.16em] text-[#8b96a6] uppercase">
-            Email
-          </span>
-          <span className="h-px flex-1 bg-[#dfe6ef]" />
+          <span className="h-px flex-1 bg-border" />
+          <span className="type-legend text-muted-foreground">or email</span>
+          <span className="h-px flex-1 bg-border" />
         </div>
       )}
 
       {passwordLoginEnabled ? (
-        <form action={formAction} className="space-y-3.5">
-          <label className="flex flex-col gap-1.5 text-[12px] font-bold text-[#4b5565]">
-            Work email
-            <span className="relative">
-              <Mail className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-[#7d8796]" strokeWidth={2} />
-              <input name="email" type="email" required autoComplete="email" className={field} placeholder="you@company.com" />
-            </span>
+        <form action={formAction} className="space-y-4">
+          <label className="flex flex-col gap-1.5">
+            <span className="type-legend text-foreground">Work email</span>
+            <input
+              name="email"
+              type="email"
+              required
+              autoComplete="email"
+              className={field}
+              placeholder="you@company.com"
+            />
           </label>
-          <label className="flex flex-col gap-1.5 text-[12px] font-bold text-[#4b5565]">
-            Password
-            <span className="relative">
-              <KeyRound className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-[#7d8796]" strokeWidth={2} />
-              <input name="password" type="password" required autoComplete="current-password" className={field} placeholder="Enter password" />
-            </span>
+          <label className="flex flex-col gap-1.5">
+            <span className="type-legend text-foreground">Password</span>
+            <input
+              name="password"
+              type="password"
+              required
+              autoComplete="current-password"
+              className={field}
+              placeholder="Enter password"
+            />
           </label>
           <Button
             type="submit"
             disabled={pending}
-            className="h-10 w-full rounded-lg bg-[#0051d5] text-[13.5px] font-bold text-white shadow-sm hover:bg-[#0043b0]"
+            className="h-11 w-full text-[14px] font-semibold"
           >
-            {pending ? "Signing in" : "Sign in"}
+            {pending ? "Signing in…" : "Sign in"}
           </Button>
+          <p className="text-[12px] leading-5 text-muted-foreground">
+            Authorized GlaciaNav workspace members only.
+          </p>
         </form>
       ) : (
         !microsoftEnabled && (
-          <p className="rounded-xl border border-[#d7dfec] bg-[#f8fbff] px-3.5 py-3 text-[12.5px] leading-5 text-[#5c6575]">
-            No sign-in method is enabled yet. An admin can turn on password or Microsoft 365 sign-in
-            in the admin console.
-          </p>
+          <div className="flex border" role="status">
+            <span className="blaze" aria-hidden="true" />
+            <p className="px-3 py-2.5 text-[13px] leading-5 text-muted-foreground">
+              No sign-in method is enabled yet. An admin can turn on password or
+              Microsoft 365 sign-in in the admin console.
+            </p>
+          </div>
         )
       )}
     </div>
