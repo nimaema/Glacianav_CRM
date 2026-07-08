@@ -78,12 +78,13 @@ export type InsightsData = {
   owners: { name: string; color: string; count: number }[];
 };
 
-// Executive chip: light tint of the status color with the color itself as text.
+// V2 flag chip body: tint of the status color over the theme canvas, with the
+// color pulled slightly toward ink for AA text contrast in both modes.
 export function chipTint(color: string) {
   return {
-    backgroundColor: `color-mix(in srgb, ${color} 12%, #ffffff)`,
-    borderColor: `color-mix(in srgb, ${color} 32%, #ffffff)`,
-    color,
+    backgroundColor: `color-mix(in srgb, ${color} 12%, var(--background))`,
+    borderColor: `color-mix(in srgb, ${color} 32%, var(--background))`,
+    color: `color-mix(in srgb, ${color} 82%, var(--foreground))`,
   };
 }
 

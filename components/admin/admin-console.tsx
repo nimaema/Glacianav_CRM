@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { Plus, Trash2, Check, Link2, Copy, ShieldCheck } from "lucide-react";
+import { Plus, Trash2, Check, Link2, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -95,10 +95,13 @@ export function AdminConsole({
     <div className="flex-1 overflow-y-auto">
       <div className="mx-auto max-w-5xl px-8 py-8">
         <div className="flex items-center gap-2.5">
-          <ShieldCheck className="size-5 text-primary" strokeWidth={2} />
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Admin console</h1>
+          <span className="size-2 bg-signal" aria-hidden="true" />
+          <span className="type-legend text-muted-foreground">Workspace administration</span>
         </div>
-        <p className="mt-0.5 text-[13px] text-muted-foreground">
+        <h1 className="type-poster mt-2 text-[clamp(26px,3vw,36px)] text-foreground">
+          Admin console
+        </h1>
+        <p className="mt-2 text-[13px] text-muted-foreground">
           Everything the workspace needs: people, columns, sharing, and sign-in.
         </p>
 
@@ -218,8 +221,8 @@ function BoardRow({
     >
       <span
         className={cn(
-          "size-2.5 shrink-0 rounded-full",
-          selected ? "bg-primary" : "bg-muted-foreground/35"
+          "size-2.5 shrink-0",
+          selected ? "bg-signal" : "bg-muted-foreground/35"
         )}
       />
       <input
@@ -363,7 +366,7 @@ function AuthSettings({ sso }: { sso: SsoState }) {
                 : "not set. Add MS_CLIENT_SECRET to your .env to finish enabling SSO."}
             </div>
             <div className="rounded-md border border-border bg-card px-3 py-2">
-              <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+              <p className="type-legend text-muted-foreground">
                 Redirect URI to register in Entra ID
               </p>
               <p className="mt-0.5 font-mono text-[12px] break-all text-foreground">
@@ -382,7 +385,7 @@ function AuthSettings({ sso }: { sso: SsoState }) {
           <Button
             onClick={save}
             disabled={pending}
-            className="h-8 bg-primary text-[12.5px] font-semibold text-white hover:bg-[#0043b0]"
+            className="h-9 text-[12.5px] font-semibold"
           >
             {pending ? "Saving" : saved ? "Saved" : "Save authentication"}
           </Button>
@@ -415,13 +418,13 @@ function ToggleRow({
         aria-label={label}
         onClick={() => onChange(!on)}
         className={cn(
-          "relative h-5 w-9 shrink-0 rounded-full transition-colors",
-          on ? "bg-primary" : "bg-input"
+          "relative h-5 w-9 shrink-0 transition-colors",
+          on ? "bg-foreground" : "bg-input"
         )}
       >
         <span
           className={cn(
-            "absolute top-0.5 size-4 rounded-full bg-white transition-transform",
+            "absolute top-0.5 size-4 bg-white transition-transform",
             on ? "translate-x-[18px]" : "translate-x-0.5"
           )}
         />
@@ -709,12 +712,12 @@ function ShareRow({ label, path, origin, openable }: { label: string; path: stri
 
 function Section({ title, hint, children }: { title: string; hint: string; children: React.ReactNode }) {
   return (
-    <section className="mt-6 rounded-lg border border-border bg-card p-5">
-      <div className="mb-3">
-        <h2 className="text-[14px] font-bold tracking-tight text-foreground">{title}</h2>
-        <p className="text-[12px] text-muted-foreground">{hint}</p>
+    <section className="mt-6 border border-border bg-card">
+      <div className="border-b border-border bg-secondary px-5 py-2.5">
+        <h2 className="type-legend text-foreground">{title}</h2>
+        <p className="mt-0.5 text-[12px] text-muted-foreground">{hint}</p>
       </div>
-      {children}
+      <div className="p-5">{children}</div>
     </section>
   );
 }

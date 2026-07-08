@@ -17,8 +17,8 @@ export function IntakeForm({ groups }: { groups: { id: string; name: string }[] 
   if (done) {
     return (
       <div className="flex flex-col items-center py-6 text-center">
-        <span className="flex size-10 items-center justify-center rounded-full bg-secondary">
-          <Check className="size-5 text-primary" strokeWidth={2.5} />
+        <span className="flex size-10 items-center justify-center bg-secondary">
+          <Check className="size-5 text-signal" strokeWidth={2.5} />
         </span>
         <p className="mt-3 text-[15px] font-semibold text-foreground">Thanks, we got it</p>
         <p className="mt-1 max-w-xs text-[12.5px] text-muted-foreground">
@@ -43,25 +43,25 @@ export function IntakeForm({ groups }: { groups: { id: string; name: string }[] 
   };
 
   const field =
-    "h-9 w-full rounded-md border border-input bg-background px-2.5 text-[13.5px] text-foreground outline-none focus-visible:border-ring";
+    "h-10 w-full border border-input bg-background px-2.5 text-[13.5px] text-foreground outline-none focus-visible:border-ring";
 
   return (
     <div className="space-y-3.5">
-      <label className="flex flex-col gap-1 text-[12px] font-medium text-muted-foreground">
+      <label className="flex flex-col gap-1.5 type-legend text-foreground">
         Name
         <input value={name} onChange={(e) => setName(e.target.value)} className={field} placeholder="Alex Bergstrom" />
       </label>
       <div className="grid grid-cols-2 gap-3">
-        <label className="flex flex-col gap-1 text-[12px] font-medium text-muted-foreground">
+        <label className="flex flex-col gap-1.5 type-legend text-foreground">
           Company or affiliation
           <input value={company} onChange={(e) => setCompany(e.target.value)} className={field} placeholder="Optional" />
         </label>
-        <label className="flex flex-col gap-1 text-[12px] font-medium text-muted-foreground">
+        <label className="flex flex-col gap-1.5 type-legend text-foreground">
           Email
           <input value={email} onChange={(e) => setEmail(e.target.value)} className={field} placeholder="you@example.com" type="email" />
         </label>
       </div>
-      <label className="flex flex-col gap-1 text-[12px] font-medium text-muted-foreground">
+      <label className="flex flex-col gap-1.5 type-legend text-foreground">
         Which best describes you?
         <select value={groupId} onChange={(e) => setGroupId(e.target.value)} className={field}>
           <option value="">Choose one</option>
@@ -72,22 +72,22 @@ export function IntakeForm({ groups }: { groups: { id: string; name: string }[] 
           ))}
         </select>
       </label>
-      <label className="flex flex-col gap-1 text-[12px] font-medium text-muted-foreground">
+      <label className="flex flex-col gap-1.5 type-legend text-foreground">
         What is the hardest part of navigating glaciers for you?
         <textarea
           value={problem}
           onChange={(e) => setProblem(e.target.value)}
           rows={3}
-          className="w-full resize-y rounded-md border border-input bg-background px-2.5 py-2 text-[13.5px] leading-relaxed text-foreground outline-none focus-visible:border-ring"
+          className="w-full resize-y border border-input bg-background px-2.5 py-2 text-[13.5px] leading-relaxed text-foreground outline-none focus-visible:border-ring"
           placeholder="Route planning, crevasse risk, offline maps, anything"
         />
       </label>
       <Button
         onClick={submit}
         disabled={!name.trim() || pending}
-        className="h-9 w-full bg-primary text-[13.5px] font-semibold text-white hover:bg-[#0043b0]"
+        className="h-11 w-full text-[14px] font-semibold"
       >
-        {pending ? "Sending" : "Send"}
+        {pending ? "Sending…" : "Send"}
       </Button>
     </div>
   );

@@ -30,7 +30,7 @@ model User {
   email        String           @unique
   passwordHash String
   role         Role             @default(MEMBER)
-  color        String           @default("#0d9488")
+  color        String           @default("#3e7d7b")
   notifyPrefs  Json? // { staleDays, followups, interviews }
   contacts     Contact[]
   notes        ValidationNote[]

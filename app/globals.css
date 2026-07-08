@@ -143,6 +143,14 @@
     @apply font-sans;
   }
 
+  /* Form controls never inherit the legend-caps voice from a labelled parent.
+     Explicit font-mono / tracking utilities on the control still win. */
+  input, select, textarea {
+    font-family: var(--font-sans);
+    letter-spacing: normal;
+    text-transform: none;
+  }
+
   /* Press feedback: interfaces should feel like they heard you */
   @media (prefers-reduced-motion: no-preference) {
     [data-slot="button"]:not(:disabled) {
