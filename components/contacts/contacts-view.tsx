@@ -97,17 +97,22 @@ export function ContactsView({
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <header className="shrink-0 border-b border-border px-8 pt-6 pb-4">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-baseline gap-2.5">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Contacts</h1>
-            <span className="text-[12.5px] font-medium tabular-nums text-muted-foreground">
-              {filtered.length} of {rows.length}
-            </span>
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <span className="size-2 bg-signal" aria-hidden="true" />
+              <span className="type-legend text-muted-foreground">
+                Records / {filtered.length} of {rows.length}
+              </span>
+            </div>
+            <h1 className="type-poster mt-2 text-[clamp(26px,3vw,36px)] text-foreground">
+              Contacts
+            </h1>
           </div>
           <NewContactDialog
             groups={board.groups.map((g) => ({ id: g.id, name: g.name, color: g.color }))}
             trigger={
-              <Button className="h-8 bg-primary px-3 text-[13px] font-semibold text-white hover:bg-[#0043b0]">
+              <Button className="h-9 px-3.5 text-[13px] font-semibold transition-colors hover:bg-signal hover:text-white">
                 New contact
               </Button>
             }
@@ -120,7 +125,7 @@ export function ContactsView({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search name, company, or need"
-              className="h-8 w-72 rounded-md border border-border bg-muted pr-7 pl-8 text-[13px] outline-none focus-visible:border-input focus-visible:bg-background"
+              className="h-9 w-72 border border-input bg-background pr-7 pl-8 text-[13px] outline-none transition-colors duration-150 hover:border-foreground/50"
             />
             {query && (
               <button
@@ -161,7 +166,7 @@ export function ContactsView({
               >
                 <ListFilter className="size-3.5" strokeWidth={1.8} />
                 Filter
-                {filterActive && <span className="size-1.5 rounded-full bg-primary" />}
+                {filterActive && <span className="size-1.5 bg-signal" />}
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-48">
@@ -177,7 +182,7 @@ export function ContactsView({
                 </DropdownMenuRadioItem>
                 {board.stages.map((s) => (
                   <DropdownMenuRadioItem key={s.id} value={s.id} className="gap-2 text-[13px]">
-                    <span className="size-2.5 rounded-[3px]" style={{ backgroundColor: s.color }} />
+                    <span className="size-2.5" style={{ backgroundColor: s.color }} />
                     {s.label}
                   </DropdownMenuRadioItem>
                 ))}
@@ -327,9 +332,9 @@ function ContactDetailPanel({ contact, board }: { contact: Row; board: BoardDTO 
           {initials(contact.name)}
         </span>
         <div className="min-w-0 flex-1">
-          <h2 className="text-[19px] font-bold tracking-tight text-foreground">{contact.name}</h2>
+          <h2 className="type-poster text-[22px] text-foreground">{contact.name}</h2>
           {contact.company && (
-            <p className="text-[13px] text-muted-foreground">{contact.company}</p>
+            <p className="type-legend mt-1 text-muted-foreground">{contact.company}</p>
           )}
         </div>
         <Link
@@ -341,10 +346,10 @@ function ContactDetailPanel({ contact, board }: { contact: Row; board: BoardDTO 
         </Link>
       </div>
 
-      <dl className="mt-5 grid grid-cols-2 gap-x-6 gap-y-3 rounded-lg border border-border p-4">
+      <dl className="mt-5 grid grid-cols-2 gap-x-6 gap-y-3 border border-border p-4">
         {facts.map(([label, value]) => (
           <div key={label} className="flex items-center justify-between gap-2">
-            <dt className="text-[12px] text-muted-foreground">{label}</dt>
+            <dt className="type-legend text-muted-foreground">{label}</dt>
             <dd className="min-w-0 truncate text-right text-[13px] text-foreground">{value}</dd>
           </div>
         ))}
@@ -352,9 +357,7 @@ function ContactDetailPanel({ contact, board }: { contact: Row; board: BoardDTO 
 
       {contact.tags.length > 0 && (
         <div className="mt-5">
-          <p className="mb-2 text-[12px] font-semibold tracking-wide text-muted-foreground uppercase">
-            Needs / problems
-          </p>
+          <p className="type-legend mb-2 text-muted-foreground">Needs / problems</p>
           <div className="flex flex-wrap gap-1.5">
             {contact.tags.map((t) => (
               <span
@@ -369,7 +372,7 @@ function ContactDetailPanel({ contact, board }: { contact: Row; board: BoardDTO 
       )}
 
       <div className="mt-6">
-        <p className="mb-2 flex items-center gap-1.5 text-[12px] font-semibold tracking-wide text-muted-foreground uppercase">
+        <p className="type-legend mb-2 flex items-center gap-1.5 text-muted-foreground">
           <MessagesSquare className="size-3.5" strokeWidth={2} />
           Interview notes
         </p>
@@ -395,9 +398,12 @@ function ContactDetailPanel({ contact, board }: { contact: Row; board: BoardDTO 
                 </span>
               </div>
               {n.quotes && (
-                <p className="mb-1.5 border-l-2 border-primary/40 pl-2 text-[12.5px] leading-relaxed whitespace-pre-line text-secondary-foreground italic">
-                  {n.quotes}
-                </p>
+                <div className="mb-1.5 flex bg-secondary/60">
+                  <span className="blaze" aria-hidden="true" />
+                  <p className="px-2.5 py-1.5 text-[12.5px] leading-relaxed whitespace-pre-line text-secondary-foreground">
+                    {n.quotes}
+                  </p>
+                </div>
               )}
               {n.body && (
                 <p className="text-[12.5px] leading-relaxed whitespace-pre-line text-foreground">
@@ -415,14 +421,19 @@ function ContactDetailPanel({ contact, board }: { contact: Row; board: BoardDTO 
 function Pill({ label, color }: { label: string; color: string }) {
   return (
     <span
-      className="inline-flex rounded-md border px-2 py-0.5 text-[11.5px] font-semibold"
+      className="relative inline-flex border py-0.5 pr-2 pl-2.5 text-[11.5px] font-semibold"
       style={chipTint(color)}
     >
+      <span
+        className="absolute inset-y-[-1px] left-[-1px] w-[3px]"
+        style={{ backgroundColor: color }}
+        aria-hidden="true"
+      />
       {label}
     </span>
   );
 }
 
-function Muted({ text = "—" }: { text?: string }) {
+function Muted({ text = "Not set" }: { text?: string }) {
   return <span className="text-muted-foreground/60">{text}</span>;
 }

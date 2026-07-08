@@ -35,13 +35,12 @@ export default async function TasksPage() {
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="mx-auto max-w-3xl px-8 py-8">
-        <div className="flex items-baseline gap-2.5">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Tasks</h1>
-          <span className="text-[12.5px] font-medium tabular-nums text-muted-foreground">
-            {total} open
-          </span>
+        <div className="flex items-center gap-2.5">
+          <span className="size-2 bg-signal" aria-hidden="true" />
+          <span className="type-legend text-muted-foreground">Records / {total} open</span>
         </div>
-        <p className="mt-0.5 text-[13px] text-muted-foreground">
+        <h1 className="type-poster mt-2 text-[clamp(26px,3vw,36px)] text-foreground">Tasks</h1>
+        <p className="mt-2 text-[13px] text-muted-foreground">
           Everything that needs a touch, pulled live from your board.
         </p>
 
@@ -62,14 +61,14 @@ export default async function TasksPage() {
 
         <Section
           title="Follow-ups to do"
-          icon={<BellRing className="size-4 text-blue-600" strokeWidth={2} />}
+          icon={<BellRing className="size-4 text-[var(--chart-2)]" strokeWidth={2} />}
           count={followups.length}
           empty="No open follow-ups."
         >
           {followups.map((c) => (
             <TaskRow key={c.id} color={c.group.color}>
               <span
-                className="inline-flex h-[22px] shrink-0 items-center rounded-md border px-2.5 text-[11px] font-semibold"
+                className="inline-flex h-[22px] shrink-0 items-center border px-2.5 text-[11px] font-semibold"
                 style={chipTint(c.followup!.color)}
               >
                 {c.followup!.label}
@@ -82,14 +81,14 @@ export default async function TasksPage() {
 
         <Section
           title="Going cold"
-          icon={<Flame className="size-4 text-orange-600" strokeWidth={2} />}
+          icon={<Flame className="size-4 text-signal" strokeWidth={2} />}
           count={stale.length}
           empty="Nothing has gone cold. Nice."
         >
           {stale.map((c) => (
             <TaskRow key={c.id} color={c.group.color}>
               <span
-                className="inline-flex h-[22px] shrink-0 items-center rounded-md border px-2.5 text-[11px] font-semibold"
+                className="inline-flex h-[22px] shrink-0 items-center border px-2.5 text-[11px] font-semibold"
                 style={chipTint(c.stage!.color)}
               >
                 {c.stage!.label}
@@ -120,20 +119,20 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="mt-6">
+    <section className="mt-7">
       <div className="mb-2 flex items-center gap-2">
         {icon}
-        <h2 className="text-[14px] font-bold tracking-tight text-foreground">{title}</h2>
-        <span className="text-[12px] font-semibold tabular-nums text-muted-foreground">
+        <h2 className="type-legend text-foreground">{title}</h2>
+        <span className="font-mono text-[12px] font-semibold tabular-nums text-muted-foreground">
           {count}
         </span>
       </div>
       {count === 0 ? (
-        <p className="rounded-lg border border-dashed border-border px-4 py-3 text-[12.5px] text-muted-foreground">
+        <p className="border border-dashed border-border px-4 py-3 text-[12.5px] text-muted-foreground">
           {empty}
         </p>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-border">{children}</div>
+        <div className="border border-border">{children}</div>
       )}
     </section>
   );
@@ -154,11 +153,11 @@ function TaskRow({ color, children }: { color: string; children: React.ReactNode
 
 function DateChip({ date }: { date: Date }) {
   return (
-    <span className="flex h-9 w-10 shrink-0 flex-col items-center justify-center rounded-md bg-muted">
-      <span className="text-[13px] leading-none font-bold tabular-nums text-foreground">
+    <span className="flex h-9 w-10 shrink-0 flex-col items-center justify-center border bg-background">
+      <span className="font-mono text-[13px] leading-none font-semibold tabular-nums text-foreground">
         {date.getDate()}
       </span>
-      <span className="text-[9px] tracking-wide text-muted-foreground uppercase">
+      <span className="type-legend text-muted-foreground">
         {date.toLocaleDateString("en-GB", { month: "short" })}
       </span>
     </span>
