@@ -32,15 +32,15 @@ export function GlobalSearch() {
 
   return (
     <form action="/contacts" className="relative">
-      <Search className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
+      <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
       <input
         ref={ref}
         name="q"
         placeholder="Search contacts"
         autoComplete="off"
-        className="h-8 w-56 rounded-md border border-transparent bg-muted pr-12 pl-8 text-[13px] text-foreground outline-none placeholder:text-muted-foreground/70 focus-visible:bg-card"
+        className="h-9 w-64 rounded-full border border-border/80 bg-background/75 pr-13 pl-9 text-[13px] text-foreground shadow-sm outline-none placeholder:text-muted-foreground/70 transition focus-visible:border-ring focus-visible:bg-white"
       />
-      <kbd className="pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 rounded border border-border bg-card px-1 font-mono text-[10px] text-muted-foreground">
+      <kbd className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 rounded-full border border-border bg-white px-1.5 font-mono text-[10px] text-muted-foreground shadow-sm">
         ⌘K
       </kbd>
     </form>
@@ -93,7 +93,7 @@ export function GlobalBell({ items }: { items: BellItem[] }) {
       <DropdownMenuTrigger asChild>
         <button
           aria-label={`Notifications: ${visible.length}`}
-          className="relative flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          className="relative flex size-9 items-center justify-center rounded-full border border-border/70 bg-background/70 text-muted-foreground shadow-sm transition-colors hover:bg-white hover:text-foreground"
         >
           <Bell className="size-[18px]" strokeWidth={1.9} />
           {visible.length > 0 && (

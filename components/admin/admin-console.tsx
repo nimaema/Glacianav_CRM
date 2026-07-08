@@ -93,7 +93,7 @@ export function AdminConsole({
 
   return (
     <div className="flex-1 overflow-y-auto">
-      <div className="mx-auto max-w-3xl px-8 py-8">
+      <div className="mx-auto max-w-5xl px-8 py-8">
         <div className="flex items-center gap-2.5">
           <ShieldCheck className="size-5 text-primary" strokeWidth={2} />
           <h1 className="text-2xl font-bold tracking-tight text-foreground">Admin console</h1>
@@ -110,39 +110,7 @@ export function AdminConsole({
           onSelectBoard={setSelectedBoardId}
         />
         <TeamRoles users={users} currentUserId={currentUserId} />
-        <StatusManager
-          title="Stages"
-          hint={`The validation pipeline for ${selectedBoard.name}`}
-          boardId={selectedBoard.id}
-          column="STAGE"
-          items={selectedBoard.stages}
-          addPlaceholder="New stage option"
-        />
-        <StatusManager
-          title="Problem confirmation"
-          hint={`Problem labels for ${selectedBoard.name}`}
-          boardId={selectedBoard.id}
-          column="PROBLEM"
-          items={selectedBoard.problems}
-          addPlaceholder="New problem option"
-        />
-        <StatusManager
-          title="Follow-up options"
-          hint={`Next-step options for ${selectedBoard.name}`}
-          boardId={selectedBoard.id}
-          column="FOLLOWUP"
-          items={selectedBoard.followups}
-          addPlaceholder="New follow-up option"
-        />
-        <StatusManager
-          title="Priority"
-          hint={`Urgency labels for ${selectedBoard.name}`}
-          boardId={selectedBoard.id}
-          column="PRIORITY"
-          items={selectedBoard.priorities}
-          addPlaceholder="New priority option"
-        />
-        <GroupManager boardId={selectedBoard.id} boardName={selectedBoard.name} groups={selectedBoard.groups} />
+        <BoardStructure board={selectedBoard} />
         <Sharing />
       </div>
     </div>
@@ -353,8 +321,8 @@ function AuthSettings({ sso }: { sso: SsoState }) {
           onChange={setPwLogin}
         />
         <ToggleRow
-          label="Microsoft 365 SSO"
-          desc="Let people sign in with their Microsoft work account"
+          label="Microsoft Entra SSO"
+          desc="Use your organization's approved Microsoft tenant"
           on={msEnabled}
           onChange={setMsEnabled}
         />
@@ -572,13 +540,55 @@ function TeamRoles({ users, currentUserId }: { users: TeamMember[]; currentUserI
         </button>
       )}
       <p className="mt-2 text-[11.5px] text-muted-foreground">
-        New members can sign in with the password glacianav, or via Microsoft 365 if enabled above.
+        New members can sign in with the password glacianav, or via Microsoft Entra SSO if enabled above.
       </p>
     </Section>
   );
 }
 
 /* ---------- statuses ---------- */
+
+function BoardStructure({ board }: { board: BoardSummary }) {
+  return (
+    <Section title="Board structure" hint={`Columns and segments for ${board.name}`}>
+      <div className="grid gap-3 lg:grid-cols-2">
+        <StatusManager
+          title="Stages"
+          hint="Pipeline"
+          boardId={board.id}
+          column="STAGE"
+          items={board.stages}
+          addPlaceholder="New stage option"
+        />
+        <StatusManager
+          title="Problem"
+          hint="Validation signal"
+          boardId={board.id}
+          column="PROBLEM"
+          items={board.problems}
+          addPlaceholder="New problem option"
+        />
+        <StatusManager
+          title="Follow-up"
+          hint="Next action"
+          boardId={board.id}
+          column="FOLLOWUP"
+          items={board.followups}
+          addPlaceholder="New follow-up option"
+        />
+        <StatusManager
+          title="Priority"
+          hint="Urgency"
+          boardId={board.id}
+          column="PRIORITY"
+          items={board.priorities}
+          addPlaceholder="New priority option"
+        />
+        <GroupManager boardId={board.id} groups={board.groups} />
+      </div>
+    </Section>
+  );
+}
 
 function StatusManager({
   title,
@@ -597,7 +607,7 @@ function StatusManager({
 }) {
   const [, startTransition] = useTransition();
   return (
-    <Section title={title} hint={hint}>
+    <SettingBlock title={title} hint={hint}>
       <div className="space-y-1.5">
         {items.map((s) => (
           <EditableRow
@@ -614,7 +624,7 @@ function StatusManager({
         placeholder={addPlaceholder}
         onAdd={(label, color) => startTransition(() => createStatus(column, label, color, boardId))}
       />
-    </Section>
+    </SettingBlock>
   );
 }
 
@@ -622,16 +632,14 @@ function StatusManager({
 
 function GroupManager({
   boardId,
-  boardName,
   groups,
 }: {
   boardId: string;
-  boardName: string;
   groups: AdminGroup[];
 }) {
   const [, startTransition] = useTransition();
   return (
-    <Section title="Segments" hint={`Groups of contacts on ${boardName}`}>
+    <SettingBlock title="Segments" hint="Contact groups" className="lg:col-span-2">
       <div className="space-y-1.5">
         {groups.map((g) => (
           <EditableRow
@@ -650,7 +658,7 @@ function GroupManager({
         placeholder="New segment name"
         onAdd={(label, color) => startTransition(() => createGroup(label, color, boardId))}
       />
-    </Section>
+    </SettingBlock>
   );
 }
 
@@ -708,6 +716,28 @@ function Section({ title, hint, children }: { title: string; hint: string; child
       </div>
       {children}
     </section>
+  );
+}
+
+function SettingBlock({
+  title,
+  hint,
+  className,
+  children,
+}: {
+  title: string;
+  hint: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={cn("rounded-lg border border-border/80 bg-muted/20 p-3", className)}>
+      <div className="mb-2 flex items-baseline justify-between gap-3">
+        <h3 className="text-[13px] font-bold tracking-tight text-foreground">{title}</h3>
+        <p className="shrink-0 text-[11.5px] text-muted-foreground">{hint}</p>
+      </div>
+      {children}
+    </div>
   );
 }
 

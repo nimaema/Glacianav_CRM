@@ -35,12 +35,10 @@ export async function AppSidebar({ session }: { session: SessionUser }) {
   const taskCount = followupsOpen + staleCount + upcoming.length;
 
   return (
-    <aside className="flex w-60 shrink-0 flex-col border-r border-sidebar-border bg-sidebar">
+    <aside className="flex w-64 shrink-0 flex-col border-r border-white/70 bg-[linear-gradient(180deg,#ffffff_0%,#f5f7fb_42%,#eef3f8_100%)] shadow-[12px_0_38px_rgba(36,52,77,0.08)]">
       <div className="p-3 pb-0">
-        <div className="flex items-center gap-2.5 rounded-lg border border-border bg-card px-3 py-2.5">
-          <span className="flex size-8 items-center justify-center rounded-md bg-brand-deep">
-            <BergMark className="size-4.5" />
-          </span>
+        <div className="flex items-center gap-2.5 rounded-2xl border border-white/80 bg-white/82 px-3 py-3 shadow-[0_14px_34px_rgba(36,52,77,0.10)] backdrop-blur">
+          <BergMark className="size-9 rounded-[13px]" />
           <div className="min-w-0">
             <p className="truncate text-[13px] font-semibold text-foreground">
               {board?.name ?? "Customer Validation"}
@@ -57,7 +55,7 @@ export async function AppSidebar({ session }: { session: SessionUser }) {
       </div>
 
       <div className="mt-6 flex-1 px-3">
-        <p className="px-2.5 pb-2 text-[10.5px] font-semibold tracking-[0.05em] text-muted-foreground uppercase">
+        <p className="px-2.5 pb-2 text-[10.5px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
           Up next
         </p>
         <div className="space-y-1">
@@ -65,10 +63,10 @@ export async function AppSidebar({ session }: { session: SessionUser }) {
             <Link
               key={c.id}
               href="/tasks"
-              className="flex items-center gap-2.5 rounded-md border border-border bg-card px-2.5 py-1.5 transition-colors hover:border-ring/40"
+              className="flex items-center gap-2.5 rounded-xl border border-white/80 bg-white/72 px-2.5 py-1.5 shadow-sm transition-colors hover:border-ring/40 hover:bg-white"
             >
               <span
-                className="flex h-8 w-9 shrink-0 flex-col items-center justify-center rounded-md bg-muted"
+                className="flex h-8 w-9 shrink-0 flex-col items-center justify-center rounded-lg bg-muted"
                 style={{ boxShadow: `inset 0 2px 0 ${c.group.color}` }}
               >
                 <span className="font-mono text-[12px] leading-none font-semibold text-foreground">
@@ -103,7 +101,7 @@ export async function AppSidebar({ session }: { session: SessionUser }) {
         <NewContactDialog
           groups={groups}
           trigger={
-            <button className="flex w-full items-center justify-center gap-1.5 rounded-md bg-brand-deep px-3 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#1e293b]">
+            <button className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-brand-deep px-3 py-2.5 text-[13px] font-semibold text-white shadow-[0_14px_28px_rgba(9,20,38,0.20)] transition-colors hover:bg-[#1e293b]">
               <Plus className="size-4" strokeWidth={2.5} />
               New contact
             </button>

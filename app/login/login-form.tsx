@@ -40,13 +40,15 @@ export function LoginForm({
       )}
 
       {microsoftEnabled && (
-        <a
-          href="/api/auth/microsoft/start"
-          className="inline-flex h-10 items-center gap-2.5 rounded-lg border border-[#cfd8e6] bg-[#f8fafc] px-3.5 text-[13px] font-semibold text-[#172033] shadow-sm transition hover:border-[#b9c7da] hover:bg-white focus-visible:ring-3 focus-visible:ring-[#316bf3]/20 focus-visible:outline-none"
-        >
-          <MicrosoftMark />
-          Microsoft
-        </a>
+        <div className="flex justify-center">
+          <a
+            href="/api/auth/microsoft/start"
+            className="inline-flex h-10 items-center gap-2.5 rounded-full border border-[#c8d4e5] bg-white px-4 text-[13px] font-bold text-[#172033] shadow-[0_10px_24px_rgba(36,52,77,0.10)] transition hover:-translate-y-0.5 hover:border-[#aebfd7] hover:shadow-[0_14px_30px_rgba(36,52,77,0.14)] focus-visible:ring-3 focus-visible:ring-[#316bf3]/20 focus-visible:outline-none active:translate-y-0"
+          >
+            <MicrosoftMark />
+            Microsoft Entra SSO
+          </a>
+        </div>
       )}
 
       {microsoftEnabled && passwordLoginEnabled && (

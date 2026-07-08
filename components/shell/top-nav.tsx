@@ -3,16 +3,12 @@ import { initials } from "@/lib/board-types";
 import type { SessionUser } from "@/lib/session";
 import { AccountMenu } from "@/components/shell/sidebar-nav";
 import { GlobalBell, GlobalSearch, type BellItem } from "@/components/shell/top-nav-client";
+import { GlaciaNavMark } from "@/components/brand/glacianav-brand";
 
 const TERMINAL = ["Validated", "Not a Fit", "Not Contacted"];
 
 export function BergMark({ className = "size-6" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
-      <path d="M12 2 L22 20 H2 Z" fill="#316bf3" />
-      <path d="M12 2 L22 20 H12 Z" fill="#091426" />
-    </svg>
-  );
+  return <GlaciaNavMark className={className} />;
 }
 
 export async function TopNav({ session }: { session: SessionUser }) {
@@ -58,10 +54,10 @@ export async function TopNav({ session }: { session: SessionUser }) {
   ];
 
   return (
-    <header className="flex h-14 shrink-0 items-center gap-4 border-b border-border bg-card pr-4 pl-5">
-      <div className="flex items-center gap-2.5">
-        <BergMark />
-        <span className="text-[15px] font-bold tracking-tight text-foreground">
+    <header className="flex h-16 shrink-0 items-center gap-4 border-b border-white/70 bg-white/82 pr-4 pl-5 shadow-[0_12px_34px_rgba(36,52,77,0.08)] backdrop-blur-xl">
+      <div className="flex items-center gap-3 rounded-full border border-border/70 bg-background/70 py-1 pr-3 pl-1.5 shadow-sm">
+        <BergMark className="size-8 rounded-[11px]" />
+        <span className="text-[14.5px] font-bold tracking-tight text-foreground">
           GlaciaNav <span className="font-semibold text-muted-foreground">CRM</span>
         </span>
       </div>

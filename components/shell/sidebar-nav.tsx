@@ -47,10 +47,10 @@ const GROUPS = [
 
 function itemClass(active: boolean) {
   return cn(
-    "flex items-center gap-2.5 rounded-md px-2.5 py-[7px] text-[13px] font-medium transition-colors",
+    "group relative flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium transition-all",
     active
-      ? "bg-sidebar-accent text-sidebar-accent-foreground"
-      : "text-muted-foreground hover:bg-card hover:text-foreground"
+      ? "bg-[#07111f] text-white shadow-[0_12px_24px_rgba(9,20,38,0.18)]"
+      : "text-muted-foreground hover:bg-white/80 hover:text-foreground hover:shadow-sm"
   );
 }
 
@@ -64,7 +64,7 @@ export function SidebarNav({ taskCount }: { taskCount: number }) {
       {GROUPS.map((group, i) => (
         <div key={i} className="flex flex-col gap-0.5">
           {group.label && (
-            <p className="px-2.5 pb-1 text-[10.5px] font-semibold tracking-[0.05em] text-muted-foreground/70 uppercase">
+            <p className="px-2.5 pb-1 text-[10.5px] font-semibold tracking-[0.08em] text-muted-foreground/70 uppercase">
               {group.label}
             </p>
           )}
@@ -72,13 +72,13 @@ export function SidebarNav({ taskCount }: { taskCount: number }) {
             const active = isActive(item.href);
             return (
               <Link key={item.href} href={item.href} className={itemClass(active)}>
-                <item.icon className="size-4" strokeWidth={1.9} />
+                <item.icon className={cn("size-4", active && "text-[#8fc3ff]")} strokeWidth={1.9} />
                 {item.label}
                 {item.href === "/tasks" && taskCount > 0 && (
                   <span
                     className={cn(
                       "ml-auto rounded-full px-1.5 font-mono text-[10.5px] font-semibold",
-                      active ? "bg-white/20 text-white" : "bg-secondary text-secondary-foreground"
+                      active ? "bg-white/18 text-white" : "bg-white/75 text-secondary-foreground shadow-sm"
                     )}
                   >
                     {taskCount}
@@ -130,10 +130,10 @@ export function AccountMenu({
       <DropdownMenuTrigger asChild>
         <button
           aria-label={`Account: ${name}`}
-          className="flex items-center gap-1.5 rounded-md p-1 transition-colors hover:bg-muted"
+        className="flex items-center gap-1.5 rounded-full border border-border/70 bg-background/70 p-1 shadow-sm transition-colors hover:bg-white"
         >
           <span
-            className="flex size-7 items-center justify-center rounded-full text-[10.5px] font-semibold text-white"
+            className="flex size-7 items-center justify-center rounded-full text-[10.5px] font-semibold text-white shadow-sm ring-2 ring-white"
             style={{ backgroundColor: color }}
           >
             {initials}
