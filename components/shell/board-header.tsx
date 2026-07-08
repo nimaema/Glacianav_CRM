@@ -29,6 +29,7 @@ import { initials, type BoardStats, type GroupDTO, type UserDTO } from "@/lib/bo
 export type BoardView = "table" | "kanban";
 
 export function BoardHeader({
+  boardName,
   stats,
   contactCount,
   view,
@@ -44,6 +45,7 @@ export function BoardHeader({
   onOwnerFilter,
   matchCount,
 }: {
+  boardName: string;
   stats: BoardStats;
   contactCount: number;
   view: BoardView;
@@ -82,7 +84,7 @@ export function BoardHeader({
       <div className="flex items-center justify-between gap-4 px-8 pt-6">
         <div className="flex items-baseline gap-2.5">
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
-            Customer Validation
+            {boardName}
           </h1>
           <span className="font-mono text-[12px] font-medium text-muted-foreground">
             {contactCount} contacts

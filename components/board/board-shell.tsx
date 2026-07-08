@@ -80,6 +80,7 @@ export function BoardShell({
   return (
     <>
       <BoardHeader
+        boardName={board.name}
         stats={stats}
         contactCount={contactCount}
         view={view}

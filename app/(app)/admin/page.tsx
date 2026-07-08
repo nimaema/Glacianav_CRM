@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
   const session = await requireAdmin();
-  const [data, users, config] = await Promise.all([
+  const [data, users, boards, config] = await Promise.all([
     getBoard(),
     prisma.user.findMany({
       orderBy: [{ role: "asc" }, { name: "asc" }],
@@ -20,6 +20,17 @@ export default async function AdminPage() {
         color: true,
         role: true,
         _count: { select: { contacts: true } },
+      },
+    }),
+    prisma.board.findMany({
+      orderBy: { name: "asc" },
+      include: {
+        statuses: { orderBy: { position: "asc" } },
+        groups: {
+          orderBy: { position: "asc" },
+          include: { _count: { select: { contacts: true } } },
+        },
+        _count: { select: { contacts: true, groups: true } },
       },
     }),
     getAppConfig(),
@@ -50,6 +61,22 @@ export default async function AdminPage() {
         color: u.color,
         role: u.role,
         contactCount: u._count.contacts,
+      }))}
+      boards={boards.map((b) => ({
+        id: b.id,
+        name: b.name,
+        contactCount: b._count.contacts,
+        groupCount: b._count.groups,
+        stages: b.statuses.filter((s) => s.column === "STAGE"),
+        followups: b.statuses.filter((s) => s.column === "FOLLOWUP"),
+        problems: b.statuses.filter((s) => s.column === "PROBLEM"),
+        priorities: b.statuses.filter((s) => s.column === "PRIORITY"),
+        groups: b.groups.map((g) => ({
+          id: g.id,
+          name: g.name,
+          color: g.color,
+          contactCount: g._count.contacts,
+        })),
       }))}
       currentUserId={session.userId}
       sso={sso}

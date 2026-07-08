@@ -11,6 +11,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  createBoard,
+  renameBoard,
+  deleteBoard,
   createStatus,
   renameStatus,
   recolorStatus,
@@ -37,6 +40,25 @@ type TeamMember = {
   contactCount: number;
 };
 
+type BoardSummary = {
+  id: string;
+  name: string;
+  contactCount: number;
+  groupCount: number;
+  stages: StatusDTO[];
+  followups: StatusDTO[];
+  problems: StatusDTO[];
+  priorities: StatusDTO[];
+  groups: AdminGroup[];
+};
+
+type AdminGroup = {
+  id: string;
+  name: string;
+  color: string;
+  contactCount: number;
+};
+
 export type SsoState = {
   passwordLoginEnabled: boolean;
   microsoftEnabled: boolean;
@@ -56,14 +78,19 @@ export type SsoState = {
 export function AdminConsole({
   board,
   users,
+  boards,
   currentUserId,
   sso,
 }: {
   board: BoardDTO;
   users: TeamMember[];
+  boards: BoardSummary[];
   currentUserId: string;
   sso: SsoState;
 }) {
+  const [selectedBoardId, setSelectedBoardId] = useState(board.id);
+  const selectedBoard = boards.find((b) => b.id === selectedBoardId) ?? boards[0];
+
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="mx-auto max-w-3xl px-8 py-8">
@@ -76,24 +103,197 @@ export function AdminConsole({
         </p>
 
         <AuthSettings sso={sso} />
+        <BoardManager
+          boards={boards}
+          currentBoardId={board.id}
+          selectedBoardId={selectedBoard.id}
+          onSelectBoard={setSelectedBoardId}
+        />
         <TeamRoles users={users} currentUserId={currentUserId} />
-        <StatusManager title="Stages" hint="The validation pipeline" column="STAGE" items={board.stages} />
+        <StatusManager
+          title="Stages"
+          hint={`The validation pipeline for ${selectedBoard.name}`}
+          boardId={selectedBoard.id}
+          column="STAGE"
+          items={selectedBoard.stages}
+          addPlaceholder="New stage option"
+        />
         <StatusManager
           title="Problem confirmation"
-          hint="Did the audience confirm the problem?"
+          hint={`Problem labels for ${selectedBoard.name}`}
+          boardId={selectedBoard.id}
           column="PROBLEM"
-          items={board.problems}
+          items={selectedBoard.problems}
+          addPlaceholder="New problem option"
         />
         <StatusManager
           title="Follow-up options"
-          hint="What to do next with a contact"
+          hint={`Next-step options for ${selectedBoard.name}`}
+          boardId={selectedBoard.id}
           column="FOLLOWUP"
-          items={board.followups}
+          items={selectedBoard.followups}
+          addPlaceholder="New follow-up option"
         />
-        <StatusManager title="Priority" hint="How urgent a contact is" column="PRIORITY" items={board.priorities} />
-        <GroupManager groups={board.groups} />
+        <StatusManager
+          title="Priority"
+          hint={`Urgency labels for ${selectedBoard.name}`}
+          boardId={selectedBoard.id}
+          column="PRIORITY"
+          items={selectedBoard.priorities}
+          addPlaceholder="New priority option"
+        />
+        <GroupManager boardId={selectedBoard.id} boardName={selectedBoard.name} groups={selectedBoard.groups} />
         <Sharing />
       </div>
+    </div>
+  );
+}
+
+/* ---------- boards ---------- */
+
+function BoardManager({
+  boards,
+  currentBoardId,
+  selectedBoardId,
+  onSelectBoard,
+}: {
+  boards: BoardSummary[];
+  currentBoardId: string;
+  selectedBoardId: string;
+  onSelectBoard: (boardId: string) => void;
+}) {
+  const [newName, setNewName] = useState("");
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
+  const run = (fn: () => Promise<void>) =>
+    startTransition(async () => {
+      setError(null);
+      try {
+        await fn();
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Action failed.");
+      }
+    });
+
+  const submit = () => {
+    const clean = newName.trim();
+    if (!clean) return;
+    run(async () => {
+      await createBoard(clean);
+      setNewName("");
+    });
+  };
+
+  return (
+    <Section title="Boards" hint="Select a board to edit its columns and segments">
+      {error && <p className="mb-2 text-[12.5px] text-destructive">{error}</p>}
+      <div className="space-y-1.5">
+        {boards.map((b) => (
+          <BoardRow
+            key={b.id}
+            board={b}
+            active={b.id === currentBoardId}
+            selected={b.id === selectedBoardId}
+            onSelect={() => onSelectBoard(b.id)}
+            onRename={(name) => run(() => renameBoard(b.id, name))}
+            onDelete={() => run(() => deleteBoard(b.id))}
+          />
+        ))}
+      </div>
+      <div className="mt-2 flex items-center gap-2">
+        <input
+          value={newName}
+          onChange={(e) => setNewName(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && submit()}
+          placeholder="New board name"
+          className="h-8 flex-1 rounded-md border border-dashed border-input bg-background px-2 text-[13px] outline-none focus-visible:border-ring"
+        />
+        <Button
+          variant="secondary"
+          className="h-8 text-[12.5px] font-semibold"
+          onClick={submit}
+          disabled={!newName.trim() || pending}
+        >
+          Add board
+        </Button>
+      </div>
+    </Section>
+  );
+}
+
+function BoardRow({
+  board,
+  active,
+  selected,
+  onSelect,
+  onRename,
+  onDelete,
+}: {
+  board: BoardSummary;
+  active: boolean;
+  selected: boolean;
+  onSelect: () => void;
+  onRename: (name: string) => void;
+  onDelete: () => void;
+}) {
+  const [draft, setDraft] = useState(board.name);
+  useEffect(() => setDraft(board.name), [board.name]);
+  const canDelete = !active && board.contactCount === 0;
+
+  return (
+    <div
+      className={cn(
+        "group flex items-center gap-2 rounded-md border px-2.5 py-1.5 transition-colors",
+        selected ? "border-primary/40 bg-accent/70" : "border-border"
+      )}
+    >
+      <span
+        className={cn(
+          "size-2.5 shrink-0 rounded-full",
+          selected ? "bg-primary" : "bg-muted-foreground/35"
+        )}
+      />
+      <input
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={() => draft.trim() && draft.trim() !== board.name && onRename(draft.trim())}
+        onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
+        className="h-7 min-w-0 flex-1 rounded-md bg-transparent px-1 text-[13px] font-medium text-foreground outline-none hover:bg-muted focus-visible:bg-background focus-visible:ring-1 focus-visible:ring-ring"
+      />
+      {active && (
+        <span className="rounded bg-accent px-1.5 py-0.5 text-[10px] font-semibold text-accent-foreground">
+          current
+        </span>
+      )}
+      <button
+        onClick={onSelect}
+        disabled={selected}
+        className="shrink-0 rounded px-2 py-1 text-[11.5px] font-semibold text-muted-foreground transition-colors enabled:hover:bg-background enabled:hover:text-foreground disabled:text-primary"
+      >
+        {selected ? "Editing" : "Edit"}
+      </button>
+      <span className="shrink-0 font-mono text-[11.5px] text-muted-foreground">
+        {board.contactCount} contacts
+      </span>
+      <span className="shrink-0 font-mono text-[11.5px] text-muted-foreground">
+        {board.groupCount} groups
+      </span>
+      <button
+        onClick={onDelete}
+        disabled={!canDelete}
+        aria-label={`Delete ${board.name}`}
+        className="shrink-0 rounded p-1 text-muted-foreground/0 transition-colors group-hover:text-muted-foreground enabled:hover:bg-muted enabled:hover:text-destructive disabled:cursor-not-allowed disabled:group-hover:text-muted-foreground/30"
+        title={
+          active
+            ? "The current board cannot be deleted"
+            : board.contactCount > 0
+              ? "Move or delete contacts first"
+              : "Delete board"
+        }
+      >
+        <Trash2 className="size-3.5" strokeWidth={2} />
+      </button>
     </div>
   );
 }
@@ -383,13 +583,17 @@ function TeamRoles({ users, currentUserId }: { users: TeamMember[]; currentUserI
 function StatusManager({
   title,
   hint,
+  boardId,
   column,
   items,
+  addPlaceholder,
 }: {
   title: string;
   hint: string;
+  boardId: string;
   column: StatusColumnKey;
   items: StatusDTO[];
+  addPlaceholder: string;
 }) {
   const [, startTransition] = useTransition();
   return (
@@ -407,8 +611,8 @@ function StatusManager({
         ))}
       </div>
       <AddRow
-        placeholder={`New ${title.toLowerCase()} option`}
-        onAdd={(label, color) => startTransition(() => createStatus(column, label, color))}
+        placeholder={addPlaceholder}
+        onAdd={(label, color) => startTransition(() => createStatus(column, label, color, boardId))}
       />
     </Section>
   );
@@ -416,18 +620,26 @@ function StatusManager({
 
 /* ---------- groups ---------- */
 
-function GroupManager({ groups }: { groups: BoardDTO["groups"] }) {
+function GroupManager({
+  boardId,
+  boardName,
+  groups,
+}: {
+  boardId: string;
+  boardName: string;
+  groups: AdminGroup[];
+}) {
   const [, startTransition] = useTransition();
   return (
-    <Section title="Segments" hint="Groups of contacts on the board">
+    <Section title="Segments" hint={`Groups of contacts on ${boardName}`}>
       <div className="space-y-1.5">
         {groups.map((g) => (
           <EditableRow
             key={g.id}
             label={g.name}
             color={g.color}
-            meta={`${g.contacts.length} contacts`}
-            deletable={g.contacts.length === 0}
+            meta={`${g.contactCount} contacts`}
+            deletable={g.contactCount === 0}
             onRename={(v) => startTransition(() => renameGroup(g.id, v))}
             onRecolor={(c) => startTransition(() => setGroupColor(g.id, c))}
             onDelete={() => startTransition(() => deleteGroup(g.id))}
@@ -436,7 +648,7 @@ function GroupManager({ groups }: { groups: BoardDTO["groups"] }) {
       </div>
       <AddRow
         placeholder="New segment name"
-        onAdd={(label, color) => startTransition(() => createGroup(label, color))}
+        onAdd={(label, color) => startTransition(() => createGroup(label, color, boardId))}
       />
     </Section>
   );

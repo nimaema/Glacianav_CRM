@@ -29,6 +29,49 @@ async function assertAdmin() {
   }
 }
 
+const DEFAULT_STATUSES: Array<{
+  column: StatusColumn;
+  label: string;
+  color: string;
+  position: number;
+  isDefault?: boolean;
+}> = [
+  { column: "STAGE", label: "Not Contacted", color: "#64748b", position: 1, isDefault: true },
+  { column: "STAGE", label: "Reached Out", color: "#2563eb", position: 2 },
+  { column: "STAGE", label: "Scheduled", color: "#7c3aed", position: 3 },
+  { column: "STAGE", label: "Interviewed", color: "#b45309", position: 4 },
+  { column: "STAGE", label: "Validated", color: "#15803d", position: 5 },
+  { column: "STAGE", label: "Not a Fit", color: "#dc2626", position: 6 },
+  { column: "FOLLOWUP", label: "No follow-up", color: "#57534e", position: 1, isDefault: true },
+  { column: "FOLLOWUP", label: "Waiting reply", color: "#b45309", position: 2 },
+  { column: "FOLLOWUP", label: "Nudge again", color: "#2563eb", position: 3 },
+  { column: "FOLLOWUP", label: "Send summary", color: "#7c3aed", position: 4 },
+  { column: "FOLLOWUP", label: "Book next call", color: "#15803d", position: 5 },
+  { column: "PRIORITY", label: "Low", color: "#64748b", position: 1 },
+  { column: "PRIORITY", label: "Medium", color: "#b45309", position: 2, isDefault: true },
+  { column: "PRIORITY", label: "High", color: "#dc2626", position: 3 },
+  { column: "PROBLEM", label: "Not asked", color: "#64748b", position: 1, isDefault: true },
+  { column: "PROBLEM", label: "Confirmed", color: "#15803d", position: 2 },
+  { column: "PROBLEM", label: "Weak signal", color: "#b45309", position: 3 },
+  { column: "PROBLEM", label: "Rejected", color: "#dc2626", position: 4 },
+];
+
+async function createBoardDefaults(tx: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], boardId: string) {
+  await tx.group.create({
+    data: {
+      boardId,
+      name: "Leads Inbox",
+      color: "#0d9488",
+      position: 1,
+      isInbox: true,
+    },
+  });
+
+  await tx.status.createMany({
+    data: DEFAULT_STATUSES.map((status) => ({ boardId, ...status })),
+  });
+}
+
 export async function bootstrapWorkspace() {
   await assertAdmin();
   const existing = await prisma.board.findFirst({ select: { id: true } });
@@ -43,40 +86,40 @@ export async function bootstrapWorkspace() {
 
     const board = await tx.board.create({ data: { name: "Customer Validation" } });
 
-    await tx.group.create({
-      data: {
-        boardId: board.id,
-        name: "Leads Inbox",
-        color: "#0d9488",
-        position: 1,
-        isInbox: true,
-      },
-    });
-
-    await tx.status.createMany({
-      data: [
-        { boardId: board.id, column: "STAGE", label: "Not Contacted", color: "#64748b", position: 1, isDefault: true },
-        { boardId: board.id, column: "STAGE", label: "Reached Out", color: "#2563eb", position: 2 },
-        { boardId: board.id, column: "STAGE", label: "Scheduled", color: "#7c3aed", position: 3 },
-        { boardId: board.id, column: "STAGE", label: "Interviewed", color: "#b45309", position: 4 },
-        { boardId: board.id, column: "STAGE", label: "Validated", color: "#15803d", position: 5 },
-        { boardId: board.id, column: "STAGE", label: "Not a Fit", color: "#dc2626", position: 6 },
-        { boardId: board.id, column: "FOLLOWUP", label: "No follow-up", color: "#57534e", position: 1, isDefault: true },
-        { boardId: board.id, column: "FOLLOWUP", label: "Waiting reply", color: "#b45309", position: 2 },
-        { boardId: board.id, column: "FOLLOWUP", label: "Nudge again", color: "#2563eb", position: 3 },
-        { boardId: board.id, column: "FOLLOWUP", label: "Send summary", color: "#7c3aed", position: 4 },
-        { boardId: board.id, column: "FOLLOWUP", label: "Book next call", color: "#15803d", position: 5 },
-        { boardId: board.id, column: "PRIORITY", label: "Low", color: "#64748b", position: 1 },
-        { boardId: board.id, column: "PRIORITY", label: "Medium", color: "#b45309", position: 2, isDefault: true },
-        { boardId: board.id, column: "PRIORITY", label: "High", color: "#dc2626", position: 3 },
-        { boardId: board.id, column: "PROBLEM", label: "Not asked", color: "#64748b", position: 1, isDefault: true },
-        { boardId: board.id, column: "PROBLEM", label: "Confirmed", color: "#15803d", position: 2 },
-        { boardId: board.id, column: "PROBLEM", label: "Weak signal", color: "#b45309", position: 3 },
-        { boardId: board.id, column: "PROBLEM", label: "Rejected", color: "#dc2626", position: 4 },
-      ],
-    });
+    await createBoardDefaults(tx, board.id);
   });
 
+  revalidatePath("/", "layout");
+}
+
+export async function createBoard(name: string) {
+  await assertAdmin();
+  const cleanName = z.string().min(1).max(80).parse(name).trim();
+
+  await prisma.$transaction(async (tx) => {
+    const board = await tx.board.create({ data: { name: cleanName } });
+    await createBoardDefaults(tx, board.id);
+  });
+
+  revalidatePath("/", "layout");
+}
+
+export async function renameBoard(boardId: string, name: string) {
+  await assertAdmin();
+  id.parse(boardId);
+  const cleanName = z.string().min(1).max(80).parse(name).trim();
+  await prisma.board.update({ where: { id: boardId }, data: { name: cleanName } });
+  revalidatePath("/", "layout");
+}
+
+export async function deleteBoard(boardId: string) {
+  await assertAdmin();
+  id.parse(boardId);
+  const contacts = await prisma.contact.count({ where: { boardId } });
+  if (contacts > 0) throw new Error("Move or delete contacts before deleting a board.");
+  const boards = await prisma.board.count();
+  if (boards <= 1) throw new Error("Keep at least one board.");
+  await prisma.board.delete({ where: { id: boardId } });
   revalidatePath("/", "layout");
 }
 
@@ -282,11 +325,13 @@ export async function createStage(label: string, color: string) {
 
 /* ---------- Groups are user-defined ---------- */
 
-export async function createGroup(name: string, color: string) {
+export async function createGroup(name: string, color: string, boardId?: string) {
   await assertAdmin();
   const cleanName = z.string().min(1).max(60).parse(name).trim();
   const cleanColor = z.string().regex(/^#[0-9a-fA-F]{6}$/).parse(color);
-  const board = await prisma.board.findFirstOrThrow();
+  const board = boardId
+    ? await prisma.board.findUniqueOrThrow({ where: { id: id.parse(boardId) } })
+    : await prisma.board.findFirstOrThrow();
   const last = await prisma.group.findFirst({
     where: { boardId: board.id },
     orderBy: { position: "desc" },
@@ -509,12 +554,14 @@ export async function createContactDetailed(input: ContactInput) {
 
 /* ---------- Generic status management (Settings) ---------- */
 
-export async function createStatus(column: StatusColumn, label: string, color: string) {
+export async function createStatus(column: StatusColumn, label: string, color: string, boardId?: string) {
   await assertAdmin();
   z.enum(StatusColumn).parse(column);
   const cleanLabel = z.string().min(1).max(40).parse(label).trim();
   const cleanColor = z.string().regex(/^#[0-9a-fA-F]{6}$/).parse(color);
-  const board = await prisma.board.findFirstOrThrow();
+  const board = boardId
+    ? await prisma.board.findUniqueOrThrow({ where: { id: id.parse(boardId) } })
+    : await prisma.board.findFirstOrThrow();
   const last = await prisma.status.findFirst({
     where: { boardId: board.id, column },
     orderBy: { position: "desc" },
