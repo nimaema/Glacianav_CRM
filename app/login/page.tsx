@@ -60,10 +60,8 @@ export default async function LoginPage(props: {
   searchParams: Promise<{ error?: string }>;
 }) {
   if (await getSession()) redirect("/");
-  const [{ passwordLoginEnabled, microsoftEnabled }, { error }] = await Promise.all([
-    getPublicAuthConfig(),
-    props.searchParams,
-  ]);
+  const [{ passwordLoginEnabled, microsoftEnabled, ssoAllowedDomain }, { error }] =
+    await Promise.all([getPublicAuthConfig(), props.searchParams]);
   const ssoError = error ? (SSO_ERRORS[error] ?? "Sign-in failed. Please try again.") : null;
 
   return (
@@ -136,6 +134,7 @@ export default async function LoginPage(props: {
               <LoginForm
                 passwordLoginEnabled={passwordLoginEnabled}
                 microsoftEnabled={microsoftEnabled}
+                ssoAllowedDomain={ssoAllowedDomain}
                 ssoError={ssoError}
               />
             </div>
