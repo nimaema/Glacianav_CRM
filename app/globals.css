@@ -10,6 +10,7 @@
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
   --font-heading: var(--font-sans);
+  --color-signal: var(--signal);
   --color-brand-deep: var(--brand-deep);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -50,75 +51,82 @@
 }
 
 :root {
-  /* GlaciaNav CRM — "Executive Precision": pearl surfaces, navy structure, Venture Blue interaction */
-  --background: #fbf8fa;
-  --foreground: #1b1b1d;
+  /* GlaciaNav CRM V2 — "Alpine Modernist": Swiss poster chrome, Landeskarte data.
+     Paper + ink + one signal red; everything square, separation by hairlines.
+     Full spec: DESIGN-V2.md */
+  --background: #ffffff;
+  --foreground: #131313;
   --card: #ffffff;
-  --card-foreground: #1b1b1d;
+  --card-foreground: #131313;
   --popover: #ffffff;
-  --popover-foreground: #1b1b1d;
-  --primary: #0051d5;
+  --popover-foreground: #131313;
+  --primary: #131313;
   --primary-foreground: #ffffff;
-  --secondary: #f0edef;
-  --secondary-foreground: #1e293b;
-  --muted: #f5f3f4;
-  --muted-foreground: #45474c;
-  --accent: #e8effc;
-  --accent-foreground: #0043b0;
-  --destructive: #ba1a1a;
-  --border: #e4e2e3;
-  --input: #c5c6cd;
-  --ring: #316bf3;
-  --chart-1: #316bf3;
-  --chart-2: #15803d;
-  --chart-3: #091426;
-  --chart-4: #b45309;
-  --chart-5: #7c3aed;
-  --radius: 0.5rem;
-  --brand-deep: #091426;
-  /* light pro-tool sidebar: tonal layer below the canvas */
-  --sidebar: #f5f3f4;
-  --sidebar-foreground: #1b1b1d;
-  --sidebar-primary: #316bf3;
+  --secondary: #f4f4f4;
+  --secondary-foreground: #131313;
+  --muted: #f4f4f4;
+  --muted-foreground: #666666;
+  --accent: #f4f4f4;
+  --accent-foreground: #131313;
+  --destructive: #b42318;
+  --border: #e3e3e3;
+  --input: #b9b9b9;
+  --ring: #da291c;
+  /* Landeskarte data hues: route, glacier, ink, contour, forest */
+  --chart-1: #da291c;
+  --chart-2: #33688c;
+  --chart-3: #131313;
+  --chart-4: #9c6b3f;
+  --chart-5: #47704a;
+  --radius: 0rem;
+  --signal: #da291c;
+  --brand-deep: #131313;
+  /* Shell: white rail ruled off the canvas; ink active block, red blaze marker */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #131313;
+  --sidebar-primary: #131313;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #316bf3;
+  --sidebar-accent: #131313;
   --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #e4e2e3;
-  --sidebar-ring: #316bf3;
+  --sidebar-border: #e3e3e3;
+  --sidebar-ring: #da291c;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: #6ea0ff;
-  --primary-foreground: #00174b;
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Disciplined inversion — night survey. Same system, brightened signal. */
+  --background: #101010;
+  --foreground: #f4f4f4;
+  --card: #101010;
+  --card-foreground: #f4f4f4;
+  --popover: #161616;
+  --popover-foreground: #f4f4f4;
+  --primary: #f4f4f4;
+  --primary-foreground: #101010;
+  --secondary: #1b1b1b;
+  --secondary-foreground: #f4f4f4;
+  --muted: #1b1b1b;
+  --muted-foreground: #a3a3a3;
+  --accent: #1b1b1b;
+  --accent-foreground: #f4f4f4;
+  --destructive: #ff6b5e;
+  --border: #2a2a2a;
+  --input: #4a4a4a;
+  --ring: #ff4b3a;
+  --chart-1: #ff4b3a;
+  --chart-2: #6fa8cc;
+  --chart-3: #f4f4f4;
+  --chart-4: #c99a6b;
+  --chart-5: #7fa982;
+  --signal: #ff4b3a;
+  --brand-deep: #f4f4f4;
+  --sidebar: #101010;
+  --sidebar-foreground: #f4f4f4;
+  --sidebar-primary: #f4f4f4;
+  --sidebar-primary-foreground: #101010;
+  --sidebar-accent: #f4f4f4;
+  --sidebar-accent-foreground: #101010;
+  --sidebar-border: #2a2a2a;
+  --sidebar-ring: #ff4b3a;
 }
 
 @layer base {
@@ -133,6 +141,14 @@
   }
   html {
     @apply font-sans;
+  }
+
+  /* Form controls never inherit the legend-caps voice from a labelled parent.
+     Explicit font-mono / tracking utilities on the control still win. */
+  input, select, textarea {
+    font-family: var(--font-sans);
+    letter-spacing: normal;
+    text-transform: none;
   }
 
   /* Press feedback: interfaces should feel like they heard you */
@@ -150,12 +166,41 @@
     }
   }
 
-  /* Focus: Venture Blue ring with a soft outer glow */
+  /* Focus: signal-red hairline ring — the blaze finds you */
   input:focus-visible,
   textarea:focus-visible,
   select:focus-visible {
     outline: none;
     border-color: var(--ring);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 20%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 22%, transparent);
+  }
+}
+
+@layer components {
+  /* Poster headline: Archivo heavy, slightly condensed, tight leading */
+  .type-poster {
+    font-weight: 800;
+    font-stretch: 95%;
+    letter-spacing: -0.02em;
+    line-height: 0.95;
+    text-wrap: balance;
+  }
+
+  /* Map-legend voice: mono caps for eyebrows, table headers, meta lines */
+  .type-legend {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The red blaze: trail-marker bar for active nav / selected row / now-line */
+  .blaze {
+    display: inline-block;
+    width: 4px;
+    align-self: stretch;
+    background: var(--signal);
   }
 }

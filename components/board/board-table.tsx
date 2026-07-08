@@ -183,15 +183,15 @@ function BoardGroup({
 
       {/* no overflow-hidden on this wrapper — it would break the sticky first column */}
       {!collapsed && (
-        <div className="rounded-lg border border-border bg-card">
-          <div className="grid border-b border-border bg-muted/40" style={{ gridTemplateColumns: template }}>
-            <div className="sticky left-0 z-[5] bg-muted px-2 py-1.5 pl-3.5 text-[10.5px] font-semibold tracking-[0.05em] text-muted-foreground uppercase">
+        <div className="border border-border bg-card">
+          <div className="grid border-b border-border bg-secondary" style={{ gridTemplateColumns: template }}>
+            <div className="type-legend sticky left-0 z-[5] bg-secondary px-2 py-2 pl-3.5 text-muted-foreground">
               Contact
             </div>
             {visibleDefs.map((col) => (
               <div
                 key={col.key}
-                className="border-l border-border/60 px-2 py-1.5 text-[10.5px] font-semibold tracking-[0.05em] text-muted-foreground uppercase"
+                className="type-legend border-l border-border/60 px-2 py-2 text-muted-foreground"
               >
                 {col.label}
               </div>
@@ -271,18 +271,17 @@ function GroupHeader({
     <div className="group/header mb-1.5 flex items-center gap-1.5">
       <button
         onClick={onToggle}
-        className="flex items-center gap-1.5 rounded-md px-1 py-0.5 transition-colors hover:bg-muted"
+        className="flex items-center gap-2 px-1 py-0.5 transition-colors hover:bg-secondary"
         aria-expanded={!collapsed}
       >
         <ChevronDown
-          className={cn("size-4 transition-transform", collapsed && "-rotate-90")}
-          style={{ color: group.color }}
+          className={cn("size-4 text-muted-foreground transition-transform", collapsed && "-rotate-90")}
           strokeWidth={2.5}
         />
+        {/* map-legend swatch carries the group color; the name stays ink */}
+        <span className="size-3 shrink-0" style={{ backgroundColor: group.color }} aria-hidden="true" />
         {renaming ? null : (
-          <h2 className="text-[15px] font-bold tracking-tight" style={{ color: group.color }}>
-            {group.name}
-          </h2>
+          <h2 className="text-[15px] font-bold tracking-tight text-foreground">{group.name}</h2>
         )}
       </button>
       {renaming && (
@@ -295,11 +294,10 @@ function GroupHeader({
             if (e.key === "Enter") saveRename();
             if (e.key === "Escape") setRenaming(false);
           }}
-          className="h-7 rounded-md border border-ring bg-background px-2 text-[14px] font-bold outline-none"
-          style={{ color: group.color }}
+          className="h-7 border border-ring bg-background px-2 text-[14px] font-bold text-foreground outline-none"
         />
       )}
-      <span className="text-[12px] font-medium tabular-nums text-muted-foreground">
+      <span className="font-mono text-[12px] font-medium tabular-nums text-muted-foreground">
         {count}
         {filtered && ` of ${total}`}
       </span>
@@ -523,12 +521,12 @@ function BoardRow({
       ref={provided.innerRef}
       {...provided.draggableProps}
       className={cn(
-        "group grid items-center border-b border-border/70 bg-card last:border-b-0 hover:bg-[#f4f7fe]",
-        isDragging && "rounded-md border-b-0 shadow-lg ring-1 ring-ring"
+        "group grid items-center border-b border-border/70 bg-card last:border-b-0 hover:bg-secondary",
+        isDragging && "border-b-0 ring-1 ring-ring"
       )}
       style={{ ...provided.draggableProps.style, gridTemplateColumns: template }}
     >
-      <div className="relative flex h-10 items-center gap-1 self-stretch bg-card pr-1 pl-2 group-hover:bg-[#f4f7fe] sticky left-0 z-[5]">
+      <div className="relative flex h-10 items-center gap-1 self-stretch bg-card pr-1 pl-2 group-hover:bg-secondary sticky left-0 z-[5]">
         <span
           className="absolute inset-y-0 left-0 w-[3px]"
           style={{ backgroundColor: group.color }}

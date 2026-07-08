@@ -55,9 +55,7 @@ export function BoardCalendar({
   return (
     <div className="flex min-h-0 flex-1 flex-col px-8 py-5">
       <div className="mb-4 flex items-center gap-3">
-        <h2 className="w-44 text-[16px] font-bold tracking-tight text-foreground">
-          {monthLabel}
-        </h2>
+        <h2 className="type-poster w-48 text-[18px] text-foreground">{monthLabel}</h2>
         <button
           aria-label="Previous month"
           onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1))}
@@ -92,9 +90,9 @@ export function BoardCalendar({
         </button>
       </div>
 
-      <div className="grid grid-cols-7 border-b border-border pb-1.5">
+      <div className="grid grid-cols-7 border-b border-foreground pb-1.5">
         {WEEKDAYS.map((d) => (
-          <span key={d} className="px-2 text-[11px] font-semibold text-muted-foreground">
+          <span key={d} className="type-legend px-2 text-muted-foreground">
             {d}
           </span>
         ))}
@@ -113,11 +111,12 @@ export function BoardCalendar({
                 !inMonth && "bg-muted/30"
               )}
             >
+              {/* today = the red "you are here" marker */}
               <span
                 className={cn(
-                  "inline-flex size-5 items-center justify-center rounded-full text-[11.5px] tabular-nums",
+                  "inline-flex size-5 items-center justify-center font-mono text-[11.5px] tabular-nums",
                   iso === todayIso
-                    ? "bg-primary font-bold text-primary-foreground"
+                    ? "bg-signal font-bold text-white"
                     : inMonth
                       ? "text-foreground"
                       : "text-muted-foreground/50"
@@ -133,7 +132,7 @@ export function BoardCalendar({
                     className="flex w-full items-center gap-1 truncate rounded px-1 py-0.5 text-left text-[11px] font-medium text-foreground transition-colors hover:bg-muted"
                   >
                     <span
-                      className="size-1.5 shrink-0 rounded-full"
+                      className="size-1.5 shrink-0"
                       style={{ backgroundColor: event.color }}
                     />
                     <span className="truncate">{event.name}</span>

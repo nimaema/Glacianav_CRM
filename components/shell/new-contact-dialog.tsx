@@ -65,17 +65,17 @@ export function NewContactDialog({
   };
 
   const field =
-    "h-9 w-full rounded-md border border-input bg-background px-2.5 text-[13.5px] text-foreground outline-none focus-visible:border-ring";
+    "h-10 w-full border border-input bg-background px-2.5 text-[13.5px] text-foreground outline-none transition-colors duration-150 hover:border-foreground/50";
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-[16px] font-bold tracking-tight">New contact</DialogTitle>
+          <DialogTitle className="type-poster text-[20px]">New contact</DialogTitle>
         </DialogHeader>
         <div className="space-y-3.5 pt-1">
-          <label className="flex flex-col gap-1 text-[12px] font-medium text-muted-foreground">
+          <label className="flex flex-col gap-1 type-legend text-foreground">
             Name
             <input
               autoFocus
@@ -87,7 +87,7 @@ export function NewContactDialog({
             />
           </label>
           <div className="grid grid-cols-2 gap-3">
-            <label className="flex flex-col gap-1 text-[12px] font-medium text-muted-foreground">
+            <label className="flex flex-col gap-1 type-legend text-foreground">
               Company
               <input
                 value={company}
@@ -96,7 +96,7 @@ export function NewContactDialog({
                 placeholder="Optional"
               />
             </label>
-            <label className="flex flex-col gap-1 text-[12px] font-medium text-muted-foreground">
+            <label className="flex flex-col gap-1 type-legend text-foreground">
               Email
               <input
                 value={email}
@@ -108,7 +108,7 @@ export function NewContactDialog({
             </label>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <label className="flex flex-col gap-1 text-[12px] font-medium text-muted-foreground">
+            <label className="flex flex-col gap-1 type-legend text-foreground">
               Segment
               <select value={groupId} onChange={(e) => setGroupId(e.target.value)} className={field}>
                 {groups.map((g) => (
@@ -118,7 +118,7 @@ export function NewContactDialog({
                 ))}
               </select>
             </label>
-            <label className="flex flex-col gap-1 text-[12px] font-medium text-muted-foreground">
+            <label className="flex flex-col gap-1 type-legend text-foreground">
               Preferred channel
               <select
                 value={channel}
@@ -137,18 +137,18 @@ export function NewContactDialog({
           <div className="flex justify-end gap-2 pt-1">
             <Button
               variant="secondary"
-              className="h-8 text-[13px]"
+              className="h-9 text-[13px]"
               disabled={!name.trim() || pending}
               onClick={() => submit(false)}
             >
               Add another
             </Button>
             <Button
-              className="h-8 bg-primary text-[13px] font-semibold text-white hover:bg-[#0043b0]"
+              className="h-9 text-[13px] font-semibold"
               disabled={!name.trim() || pending}
               onClick={() => submit(true)}
             >
-              {pending ? "Creating" : "Create + open board"}
+              {pending ? "Creating…" : "Create + open board"}
             </Button>
           </div>
         </div>

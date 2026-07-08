@@ -8,13 +8,13 @@ const prisma = new PrismaClient({
 });
 
 const STATUS = {
-  slate: "#64748b",
-  blue: "#2563eb",
-  violet: "#7c3aed",
-  amber: "#b45309",
-  green: "#15803d",
-  red: "#dc2626",
-  stone: "#57534e",
+  slate: "#5b6b78",
+  blue: "#33688c",
+  violet: "#6d5a8e",
+  amber: "#9c6b3f",
+  green: "#47704a",
+  red: "#c6362c",
+  stone: "#7a6f5f",
 };
 
 type Channel = "EMAIL" | "LINKEDIN" | "PHONE";
@@ -30,7 +30,7 @@ async function main() {
       email: "nimaemami31@gmail.com",
       passwordHash: bcrypt.hashSync("glacianav", 10),
       role: "ADMIN",
-      color: "#0d9488",
+      color: "#3e7d7b",
     },
   });
   const sara = await prisma.user.create({
@@ -39,7 +39,7 @@ async function main() {
       email: "sara@glacianav.com",
       passwordHash: bcrypt.hashSync("glacianav", 10),
       role: "MEMBER",
-      color: "#7c3aed",
+      color: "#6d5a8e",
     },
   });
 
@@ -93,13 +93,13 @@ async function main() {
   }
 
   const guides = await prisma.group.create({
-    data: { boardId: board.id, name: "Mountain Guides", color: "#0d9488", position: 1 },
+    data: { boardId: board.id, name: "Mountain Guides", color: "#3e7d7b", position: 1 },
   });
   const operators = await prisma.group.create({
-    data: { boardId: board.id, name: "Tour Operators", color: "#f97316", position: 2 },
+    data: { boardId: board.id, name: "Tour Operators", color: "#9c6b3f", position: 2 },
   });
   const alpinists = await prisma.group.create({
-    data: { boardId: board.id, name: "Independent Alpinists", color: "#6366f1", position: 3 },
+    data: { boardId: board.id, name: "Independent Alpinists", color: "#46557f", position: 3 },
   });
 
   const tagNames = [

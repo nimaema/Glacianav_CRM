@@ -4,14 +4,14 @@ import { Button } from "@/components/ui/button";
 export function EmptyBoardState({ isAdmin }: { isAdmin: boolean }) {
   return (
     <div className="flex flex-1 items-center justify-center px-6">
-      <div className="w-full max-w-md rounded-md border border-border bg-card p-5 text-center">
-        <h1 className="text-lg font-semibold text-foreground">Create your CRM board</h1>
-        <p className="mt-1.5 text-[13px] leading-5 text-muted-foreground">
+      <div className="w-full max-w-md border border-border bg-card p-6 text-center">
+        <h1 className="type-poster text-[22px] text-foreground">Create your board</h1>
+        <p className="mt-2 text-[13px] leading-5 text-muted-foreground">
           This workspace is connected, but the first board has not been created yet.
         </p>
         {isAdmin ? (
           <form action={bootstrapWorkspace} className="mt-4">
-            <Button type="submit" className="h-9 bg-primary px-4 text-[13px] font-semibold text-white hover:bg-[#0043b0]">
+            <Button type="submit" className="h-9 px-4 text-[13px] font-semibold">
               Create board
             </Button>
           </form>

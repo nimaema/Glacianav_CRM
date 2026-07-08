@@ -1,16 +1,18 @@
-// Pill palette — saturated Monday-style hues tuned so 12px bold white text
-// passes WCAG AA (4.5:1). Status rows in the DB store one of these hex values.
+// V2 "Alpine Modernist" data palette — Landeskarte hues (rock, glacier, forest,
+// contour, route…). Desaturated map colors: every hue passes WCAG AA (4.5:1)
+// as 12px chip text on its 12% tint. Status/Group rows in the DB store one of
+// these hex values.
 export const STATUS_COLORS = {
-  slate: "#64748b",
-  blue: "#2563eb",
-  violet: "#7c3aed",
-  amber: "#b45309",
-  green: "#15803d",
-  red: "#dc2626",
-  teal: "#0d9488",
-  pink: "#db2777",
-  indigo: "#4f46e5",
-  stone: "#57534e",
+  slate: "#5b6b78", // rock
+  blue: "#33688c", // glacier
+  violet: "#6d5a8e", // shadow
+  amber: "#9c6b3f", // contour
+  green: "#47704a", // forest
+  red: "#c6362c", // route
+  teal: "#3e7d7b", // ice
+  pink: "#a45a74", // moraine
+  indigo: "#46557f", // night
+  stone: "#7a6f5f", // scree
 } as const;
 
 export type StatusOption = {

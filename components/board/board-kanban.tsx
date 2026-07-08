@@ -64,7 +64,7 @@ export function BoardKanban({
                   style={{ backgroundColor: stage.color }}
                 />
                 <header className="flex items-center gap-2 px-3 pt-2 pb-2.5">
-                  <h3 className="text-[11px] font-semibold tracking-[0.05em] text-muted-foreground uppercase">{stage.label}</h3>
+                  <h3 className="type-legend text-foreground">{stage.label}</h3>
                   <span className="font-mono text-[12px] font-semibold text-muted-foreground">
                     {cards.length}
                   </span>
@@ -132,8 +132,8 @@ function KanbanCard({
     <article
       onClick={onOpen}
       className={cn(
-        "relative cursor-pointer rounded-lg border border-border bg-card py-2 pr-2.5 pl-3.5 transition-colors hover:border-ring/50",
-        isDragging && "shadow-lg ring-1 ring-ring"
+        "relative cursor-pointer border border-border bg-card py-2 pr-2.5 pl-3.5 transition-[border-color,transform] duration-150 hover:-translate-y-px hover:border-foreground/50 motion-reduce:hover:translate-y-0",
+        isDragging && "ring-1 ring-ring"
       )}
     >
       <span
@@ -186,7 +186,7 @@ function KanbanCard({
         <span className="flex-1" />
         {contact.followup && contact.followup.label !== "No follow-up" && (
           <span
-            className="size-1.5 rounded-full"
+            className="size-1.5"
             style={{ backgroundColor: contact.followup.color }}
             title={`Follow-up: ${contact.followup.label}`}
           />
