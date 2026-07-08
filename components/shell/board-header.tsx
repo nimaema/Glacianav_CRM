@@ -81,14 +81,17 @@ export function BoardHeader({
 
   return (
     <header className="shrink-0 bg-background">
-      <div className="flex items-center justify-between gap-4 px-8 pt-6">
-        <div className="flex items-baseline gap-2.5">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+      <div className="flex flex-wrap items-end justify-between gap-4 px-8 pt-6">
+        <div>
+          <div className="flex items-center gap-2.5">
+            <span className="size-2 bg-signal" aria-hidden="true" />
+            <span className="type-legend text-muted-foreground">
+              Board / {contactCount} contacts
+            </span>
+          </div>
+          <h1 className="type-poster mt-2 text-[clamp(26px,3vw,36px)] text-foreground">
             {boardName}
           </h1>
-          <span className="font-mono text-[12px] font-medium text-muted-foreground">
-            {contactCount} contacts
-          </span>
         </div>
         <div className="flex items-center gap-2.5">
           {bell}
@@ -98,7 +101,7 @@ export function BoardHeader({
               value={query}
               onChange={(e) => onQuery(e.target.value)}
               placeholder="Filter board"
-              className="h-8 w-44 border-transparent bg-muted pr-7 pl-8 text-[13px] shadow-none focus-visible:bg-card"
+              className="h-9 w-48 rounded-none border-input bg-background pr-7 pl-8 text-[13px] shadow-none"
             />
             {query && (
               <button
@@ -113,7 +116,7 @@ export function BoardHeader({
           <NewContactDialog
             groups={groups.map((g) => ({ id: g.id, name: g.name, color: g.color }))}
             trigger={
-              <Button className="h-8 bg-primary px-3 text-[13px] font-semibold text-white hover:bg-[#0043b0]">
+              <Button className="h-9 px-3.5 text-[13px] font-semibold transition-colors hover:bg-signal hover:text-white">
                 <Plus className="size-4" strokeWidth={2.5} />
                 New contact
               </Button>
@@ -122,53 +125,51 @@ export function BoardHeader({
         </div>
       </div>
 
-      <div className="mt-5 flex items-center divide-x divide-border px-8">
+      <div className="mt-5 grid grid-cols-2 gap-px border-y bg-border px-0 sm:grid-cols-3 lg:grid-cols-5">
         {cells.map((cell) => (
-          <div key={cell.label} className="flex min-w-0 flex-col gap-px pr-8 pl-8 first:pl-0">
-            <span className="truncate text-[19px] font-bold tracking-tight tabular-nums text-foreground">
+          <div key={cell.label} className="min-w-0 bg-background px-5 py-3">
+            <span className="block truncate text-[20px] leading-tight font-bold tracking-tight tabular-nums text-foreground">
               {cell.value}
             </span>
-            <span className="truncate text-[11.5px] font-medium text-muted-foreground">
+            <span className="type-legend block truncate text-muted-foreground">
               {cell.label}
             </span>
           </div>
         ))}
       </div>
 
-      <div className="mt-5 flex items-center gap-1 border-b border-border px-6">
+      <div className="flex items-center gap-1 border-b border-border px-6 py-2">
         {views.map((v) => (
           <button
             key={v.key}
             onClick={() => onViewChange(v.key)}
             aria-pressed={view === v.key}
             className={cn(
-              "flex items-center gap-1.5 border-b-2 px-2.5 pb-2 text-[13px] transition-colors",
+              "relative flex h-8 items-center gap-1.5 px-3 text-[13px] transition-colors duration-150",
               view === v.key
-                ? "border-primary font-semibold text-foreground"
-                : "border-transparent font-medium text-muted-foreground hover:text-foreground"
+                ? "bg-foreground font-semibold text-background"
+                : "font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
             )}
           >
-            <v.icon
-              className={cn("size-3.5", view === v.key && "text-primary")}
-              strokeWidth={2.2}
-            />
+            {view === v.key && (
+              <span className="absolute inset-y-0 left-0 w-[3px] bg-signal" aria-hidden="true" />
+            )}
+            <v.icon className="size-3.5" strokeWidth={2.2} />
             {v.label}
           </button>
         ))}
-        <div className="mx-2 mb-2 h-4 w-px bg-border" />
+        <div className="mx-2 h-4 w-px bg-border" />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
               className={cn(
-                "mb-1 flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] font-medium transition-colors hover:bg-muted hover:text-foreground",
+                "flex h-8 items-center gap-1.5 px-2.5 text-[13px] font-medium transition-colors duration-150 hover:bg-secondary hover:text-foreground",
                 ownerFilter !== null ? "text-foreground" : "text-muted-foreground"
               )}
             >
               <ListFilter className="size-3.5" strokeWidth={1.8} />
               Filter
-              {ownerFilter !== null && (
-                <span className="size-1.5 rounded-full bg-primary" />
-              )}
+              {ownerFilter !== null && <span className="size-1.5 bg-signal" />}
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-48">
@@ -202,7 +203,7 @@ export function BoardHeader({
         </DropdownMenu>
 
         {matchCount !== null && (
-          <span className="mb-1 ml-1 text-[12px] tabular-nums text-muted-foreground">
+          <span className="ml-1 font-mono text-[12px] tabular-nums text-muted-foreground">
             {matchCount} match{matchCount === 1 ? "" : "es"}
           </span>
         )}
@@ -211,14 +212,14 @@ export function BoardHeader({
           <DropdownMenuTrigger asChild>
             <button
               className={cn(
-                "mb-1 flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] font-medium transition-colors hover:bg-muted hover:text-foreground",
+                "flex h-8 items-center gap-1.5 px-2.5 text-[13px] font-medium transition-colors duration-150 hover:bg-secondary hover:text-foreground",
                 view === "table" ? "text-muted-foreground" : "hidden"
               )}
             >
               <Columns3 className="size-3.5" strokeWidth={1.8} />
               Columns
               {hiddenCount > 0 && (
-                <span className="rounded-full bg-secondary px-1.5 text-[10.5px] font-semibold text-secondary-foreground">
+                <span className="border px-1.5 font-mono text-[10.5px] font-semibold text-secondary-foreground">
                   {hiddenCount} hidden
                 </span>
               )}

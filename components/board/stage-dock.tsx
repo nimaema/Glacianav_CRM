@@ -24,7 +24,7 @@ export function StageDock({
 }) {
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-4 z-20 flex justify-center px-6">
-      <div className="pointer-events-auto flex max-w-full items-center gap-0.5 overflow-x-auto rounded-2xl border border-border bg-card/95 p-1.5 shadow-[0_8px_30px_-8px_rgba(9,20,38,0.25)] backdrop-blur">
+      <div className="pointer-events-auto flex max-w-full items-center gap-0.5 overflow-x-auto border border-foreground/25 bg-background p-1.5">
         {stages.map((stage) => {
           const inStage = contacts.filter((c) => c.stage?.id === stage.id);
           const active = activeStageId === stage.id;
@@ -40,7 +40,7 @@ export function StageDock({
               )}
               style={active ? { boxShadow: `inset 0 -2px 0 ${stage.color}` } : undefined}
             >
-              <span className="size-2 rounded-full" style={{ backgroundColor: stage.color }} />
+              <span className="size-2" style={{ backgroundColor: stage.color }} />
               <span className="text-[12px] font-medium whitespace-nowrap text-foreground">
                 {stage.label}
               </span>

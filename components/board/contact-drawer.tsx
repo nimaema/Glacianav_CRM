@@ -12,7 +12,6 @@ import {
   ArrowRightLeft,
   Trash2,
   Clock,
-  Quote,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -88,11 +87,13 @@ export function ContactDrawer({
         <SheetHeader className="shrink-0 border-b border-border px-5 pt-5 pb-4">
           <div className="flex items-start justify-between gap-3 pr-8">
             <div className="min-w-0">
-              <SheetTitle className="truncate text-[17px] font-bold tracking-tight">
+              <SheetTitle className="type-poster truncate text-[20px]">
                 {contact.name}
               </SheetTitle>
               {contact.company && (
-                <p className="truncate text-[12.5px] text-muted-foreground">{contact.company}</p>
+                <p className="type-legend mt-1 truncate text-muted-foreground">
+                  {contact.company}
+                </p>
               )}
             </div>
             <StatusPill
@@ -173,12 +174,15 @@ export function ContactDrawer({
                 key={t}
                 onClick={() => setTab(t)}
                 className={cn(
-                  "border-b-2 px-2.5 pb-2 text-[13px] capitalize transition-colors",
+                  "relative mb-2 flex h-8 items-center px-3 text-[13px] capitalize transition-colors duration-150",
                   tab === t
-                    ? "border-primary font-semibold text-foreground"
-                    : "border-transparent font-medium text-muted-foreground hover:text-foreground"
+                    ? "bg-foreground font-semibold text-background"
+                    : "font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
                 )}
               >
+                {tab === t && (
+                  <span className="absolute inset-y-0 left-0 w-[3px] bg-signal" aria-hidden="true" />
+                )}
                 {t === "notes" ? `Interview notes (${detail?.notes.length ?? contact.notesCount})` : "Activity"}
               </button>
             ))}
@@ -253,7 +257,7 @@ export function ContactDrawer({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex min-w-0 items-center justify-between gap-2">
-      <span className="shrink-0 text-[12px] text-muted-foreground">{label}</span>
+      <span className="type-legend shrink-0 text-muted-foreground">{label}</span>
       <div className="flex min-w-0 justify-end">{children}</div>
     </div>
   );
@@ -313,10 +317,10 @@ function NoteForm({ onSubmit }: { onSubmit: (input: NoteInput) => void }) {
             onClick={() => setType(t.key)}
             aria-pressed={type === t.key}
             className={cn(
-              "flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] font-medium transition-colors",
+              "flex items-center gap-1.5 border px-2.5 py-1 text-[12px] font-medium transition-colors duration-150",
               type === t.key
-                ? "border-primary bg-secondary text-secondary-foreground"
-                : "border-border text-muted-foreground hover:border-ring hover:text-foreground"
+                ? "border-foreground bg-foreground text-background"
+                : "border-border text-muted-foreground hover:border-foreground/50 hover:text-foreground"
             )}
           >
             <t.icon className="size-3.5" strokeWidth={2} />
@@ -426,9 +430,9 @@ function NoteCard({
       </div>
 
       {note.quotes && (
-        <blockquote className="mb-2 flex gap-2 rounded-md bg-secondary/60 px-3 py-2">
-          <Quote className="mt-0.5 size-3.5 shrink-0 text-primary" strokeWidth={2} />
-          <p className="text-[12.5px] leading-relaxed whitespace-pre-line text-secondary-foreground">
+        <blockquote className="mb-2 flex bg-secondary/60">
+          <span className="blaze" aria-hidden="true" />
+          <p className="px-3 py-2 text-[12.5px] leading-relaxed whitespace-pre-line text-secondary-foreground">
             {note.quotes}
           </p>
         </blockquote>
