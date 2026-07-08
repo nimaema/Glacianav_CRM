@@ -29,6 +29,13 @@ square, everything ruled, type does the talking.
    column grids, ink-filled blocks (footers, panels), area-filled diagrams, poster
    type at genuinely large scale, tonal surface blocks against the paper. Restraint
    lives in the palette and the rules, never in emptiness.
+9. **Engaging, not exhibitional** (Nima's Gate-2 calibration: "user friendly and
+   interesting to interact with"). Every data surface responds to the user: rows and
+   cards shift surface + show the blaze on hover, diagrams are live (hover a waypoint
+   → who it is; click → go there), metrics count up on load, drag is first-class where
+   order matters, empty states invite the next action, ⌘K reaches everything. Motion
+   stays Swiss-crisp (120–200ms, transform/opacity, no bounce) and dies under
+   `prefers-reduced-motion`.
 
 ## Tokens (light)
 

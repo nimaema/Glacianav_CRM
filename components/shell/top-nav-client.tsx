@@ -38,9 +38,9 @@ export function GlobalSearch() {
         name="q"
         placeholder="Search contacts"
         autoComplete="off"
-        className="h-9 w-64 rounded-full border border-border/80 bg-background/75 pr-13 pl-9 text-[13px] text-foreground shadow-sm outline-none placeholder:text-muted-foreground/70 transition focus-visible:border-ring focus-visible:bg-white"
+        className="h-9 w-64 border border-input bg-background pr-13 pl-9 text-[13px] text-foreground outline-none transition-colors duration-150 placeholder:text-muted-foreground/70 hover:border-foreground/50"
       />
-      <kbd className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 rounded-full border border-border bg-white px-1.5 font-mono text-[10px] text-muted-foreground shadow-sm">
+      <kbd className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 border bg-secondary px-1.5 font-mono text-[10px] text-muted-foreground">
         ⌘K
       </kbd>
     </form>
@@ -59,10 +59,11 @@ export type BellItem = {
 
 const STALE_KEY = "crm-stale-days";
 const ICONS = { interview: CalendarClock, followup: BellRing, stale: Flame };
+/* Data is the map: interviews glacier-blue, follow-ups ink, going-cold signal red */
 const ICON_COLORS = {
-  interview: "text-primary",
-  followup: "text-blue-600",
-  stale: "text-orange-600",
+  interview: "text-[var(--chart-2)]",
+  followup: "text-foreground",
+  stale: "text-signal",
 };
 
 export function GlobalBell({ items }: { items: BellItem[] }) {
@@ -93,11 +94,11 @@ export function GlobalBell({ items }: { items: BellItem[] }) {
       <DropdownMenuTrigger asChild>
         <button
           aria-label={`Notifications: ${visible.length}`}
-          className="relative flex size-9 items-center justify-center rounded-full border border-border/70 bg-background/70 text-muted-foreground shadow-sm transition-colors hover:bg-white hover:text-foreground"
+          className="relative flex size-9 items-center justify-center border bg-background text-muted-foreground transition-colors duration-150 hover:border-foreground/50 hover:text-foreground"
         >
           <Bell className="size-[18px]" strokeWidth={1.9} />
           {visible.length > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 font-mono text-[9.5px] font-semibold text-primary-foreground">
+            <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center bg-signal px-1 font-mono text-[9.5px] font-semibold text-white">
               {visible.length}
             </span>
           )}
@@ -149,10 +150,10 @@ export function GlobalBell({ items }: { items: BellItem[] }) {
               key={d}
               onClick={() => setThreshold(d)}
               className={cn(
-                "rounded-md px-2 py-0.5 font-mono text-[11.5px] font-semibold transition-colors",
+                "px-2 py-0.5 font-mono text-[11.5px] font-semibold transition-colors duration-150",
                 staleDays === d
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:bg-muted"
+                  ? "bg-foreground text-background"
+                  : "text-muted-foreground hover:bg-secondary"
               )}
             >
               {d}d

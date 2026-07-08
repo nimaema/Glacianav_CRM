@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import type { SessionUser } from "@/lib/session";
 import { NewContactDialog } from "@/components/shell/new-contact-dialog";
 import { SidebarNav, BottomLinks } from "@/components/shell/sidebar-nav";
-import { BergMark } from "@/components/shell/top-nav";
+import { GlaciaNavMark } from "@/components/brand/glacianav-brand";
 
 const TERMINAL = ["Validated", "Not a Fit", "Not Contacted"];
 
@@ -35,44 +35,43 @@ export async function AppSidebar({ session }: { session: SessionUser }) {
   const taskCount = followupsOpen + staleCount + upcoming.length;
 
   return (
-    <aside className="flex w-64 shrink-0 flex-col border-r border-white/70 bg-[linear-gradient(180deg,#ffffff_0%,#f5f7fb_42%,#eef3f8_100%)] shadow-[12px_0_38px_rgba(36,52,77,0.08)]">
-      <div className="p-3 pb-0">
-        <div className="flex items-center gap-2.5 rounded-2xl border border-white/80 bg-white/82 px-3 py-3 shadow-[0_14px_34px_rgba(36,52,77,0.10)] backdrop-blur">
-          <BergMark className="size-9 rounded-[13px]" />
-          <div className="min-w-0">
-            <p className="truncate text-[13px] font-semibold text-foreground">
-              {board?.name ?? "Customer Validation"}
-            </p>
-            <p className="text-[10.5px] font-semibold tracking-[0.05em] text-muted-foreground uppercase">
-              Validation workspace
-            </p>
-          </div>
+    <aside className="flex w-64 shrink-0 flex-col border-r bg-sidebar">
+      {/* workspace block: ink, like the poster's imprint */}
+      <div className="flex items-center gap-2.5 bg-foreground px-4 py-3.5 text-background">
+        <GlaciaNavMark tone="light" className="size-9" />
+        <div className="min-w-0">
+          <p className="truncate text-[13px] font-bold tracking-tight">
+            {board?.name ?? "Customer Validation"}
+          </p>
+          <p className="type-legend text-background/60">Validation workspace</p>
         </div>
       </div>
 
-      <div className="px-3 pt-4">
+      <div className="pt-4">
         <SidebarNav taskCount={taskCount} />
       </div>
 
-      <div className="mt-6 flex-1 px-3">
-        <p className="px-2.5 pb-2 text-[10.5px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
-          Up next
-        </p>
-        <div className="space-y-1">
+      <div className="mt-6 min-h-0 flex-1 overflow-y-auto">
+        <p className="type-legend px-3 pb-1.5 text-muted-foreground">Up next</p>
+        <div>
           {upcoming.map((c) => (
             <Link
               key={c.id}
               href="/tasks"
-              className="flex items-center gap-2.5 rounded-xl border border-white/80 bg-white/72 px-2.5 py-1.5 shadow-sm transition-colors hover:border-ring/40 hover:bg-white"
+              className="group relative flex items-center gap-2.5 border-t px-3 py-2 transition-colors duration-150 last:border-b hover:bg-secondary"
             >
               <span
-                className="flex h-8 w-9 shrink-0 flex-col items-center justify-center rounded-lg bg-muted"
+                className="absolute inset-y-0 left-0 w-[3px] scale-y-0 bg-signal transition-transform duration-150 group-hover:scale-y-100"
+                aria-hidden="true"
+              />
+              <span
+                className="flex h-9 w-10 shrink-0 flex-col items-center justify-center border bg-background"
                 style={{ boxShadow: `inset 0 2px 0 ${c.group.color}` }}
               >
                 <span className="font-mono text-[12px] leading-none font-semibold text-foreground">
                   {c.interviewDate!.getDate()}
                 </span>
-                <span className="text-[8.5px] tracking-wide text-muted-foreground uppercase">
+                <span className="type-legend text-muted-foreground">
                   {c.interviewDate!.toLocaleDateString("en-GB", { month: "short" })}
                 </span>
               </span>
@@ -86,28 +85,26 @@ export async function AppSidebar({ session }: { session: SessionUser }) {
             </Link>
           ))}
           {upcoming.length === 0 && (
-            <p className="px-2.5 py-1 text-[12px] text-muted-foreground/70">
+            <p className="px-3 py-1 text-[12px] text-muted-foreground/70">
               No interviews scheduled.
             </p>
           )}
         </div>
       </div>
 
-      <div className="px-3 pb-1">
+      <div className="pb-1">
         <BottomLinks isAdmin={isAdmin} />
       </div>
 
-      <div className="p-3">
-        <NewContactDialog
-          groups={groups}
-          trigger={
-            <button className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-brand-deep px-3 py-2.5 text-[13px] font-semibold text-white shadow-[0_14px_28px_rgba(9,20,38,0.20)] transition-colors hover:bg-[#1e293b]">
-              <Plus className="size-4" strokeWidth={2.5} />
-              New contact
-            </button>
-          }
-        />
-      </div>
+      <NewContactDialog
+        groups={groups}
+        trigger={
+          <button className="flex h-11 w-full items-center justify-center gap-1.5 bg-foreground text-[13px] font-semibold text-background transition-colors duration-150 hover:bg-signal">
+            <Plus className="size-4" strokeWidth={2.5} />
+            New contact
+          </button>
+        }
+      />
     </aside>
   );
 }
