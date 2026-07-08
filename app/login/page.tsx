@@ -25,48 +25,33 @@ const STAGES = [
   "Validated",
 ];
 
-/* Swisstopo-style cross-section: filled terrain, hairline elevation grid,
-   red route to the summit. The same diagram becomes the data-bound Ascent
-   hero on the dashboard. */
-function CrossSection() {
+/* Compact Swiss-poster massif: flat tonal peaks on a baseline rule, one red
+   switchback route to the summit. The full data-bound cross-section lives on
+   the dashboard as the Ascent. */
+function Massif() {
   return (
-    <svg viewBox="0 0 560 190" className="w-full" aria-hidden="true" fill="none">
-      {/* glacier body under the terrain */}
-      <path
-        d="M0,175 L70,150 L130,158 L210,108 L268,122 L340,58 L396,74 L460,30 L560,14 L560,190 L0,190 Z"
-        fill="#33688c"
-        opacity="0.08"
-      />
-      {/* elevation grid */}
-      {[20, 60, 100, 140, 180].map((y) => (
-        <line key={y} x1="0" y1={y} x2="560" y2={y} stroke="var(--border)" strokeWidth="1" />
-      ))}
-      <text x="0" y="16" className="fill-muted-foreground font-mono" fontSize="9" letterSpacing="1">3400</text>
-      <text x="0" y="56" className="fill-muted-foreground font-mono" fontSize="9" letterSpacing="1">3000</text>
-      <text x="0" y="96" className="fill-muted-foreground font-mono" fontSize="9" letterSpacing="1">2600</text>
-      <text x="0" y="136" className="fill-muted-foreground font-mono" fontSize="9" letterSpacing="1">2200</text>
-      {/* terrain profile */}
+    <svg
+      viewBox="0 0 560 104"
+      className="w-full max-w-lg"
+      aria-hidden="true"
+      fill="none"
+    >
+      {/* flanking peaks: tonal greys */}
+      <path d="M0,96 L104,34 L208,96 Z" fill="var(--foreground)" opacity="0.16" />
+      <path d="M242,96 L392,26 L542,96 Z" fill="var(--foreground)" opacity="0.09" />
+      {/* main peak: solid ink */}
+      <path d="M118,96 L236,10 L354,96 Z" fill="var(--foreground)" />
+      {/* switchback route: paper cut through the ink */}
       <polyline
-        points="0,175 70,150 130,158 210,108 268,122 340,58 396,74 460,30 560,14"
-        stroke="var(--foreground)"
-        strokeWidth="1.5"
-      />
-      {/* the route */}
-      <polyline
-        points="0,175 130,158 268,122 396,74 460,30"
-        stroke="var(--signal)"
+        points="132,90 200,64 182,52 224,34 236,10"
+        stroke="var(--background)"
         strokeWidth="2"
+        strokeLinejoin="round"
       />
-      {[
-        [130, 158],
-        [268, 122],
-        [396, 74],
-      ].map(([x, y]) => (
-        <circle key={x} cx={x} cy={y} r="3.5" fill="var(--background)" stroke="var(--signal)" strokeWidth="2" />
-      ))}
-      {/* summit */}
-      <circle cx="460" cy="30" r="4.5" fill="var(--signal)" />
-      <text x="474" y="34" className="fill-foreground font-mono" fontSize="9.5" letterSpacing="1.5">VALIDATED</text>
+      {/* summit marker */}
+      <circle cx="236" cy="10" r="4.5" fill="var(--signal)" />
+      {/* baseline rule */}
+      <line x1="0" y1="96" x2="560" y2="96" stroke="var(--foreground)" strokeWidth="1.5" />
     </svg>
   );
 }
@@ -137,7 +122,7 @@ export default async function LoginPage(props: {
           </div>
 
           <div className="relative mt-14 hidden lg:block">
-            <CrossSection />
+            <Massif />
           </div>
         </div>
 
