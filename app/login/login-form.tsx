@@ -43,7 +43,7 @@ export function LoginForm({
       {microsoftEnabled && (
         <a
           href="/api/auth/microsoft/start"
-          className="flex h-11 w-full items-center justify-center gap-2.5 border border-foreground text-[13.5px] font-semibold transition-colors duration-150 hover:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className="flex h-11 w-full items-center justify-center gap-2.5 border border-foreground bg-background text-[13.5px] font-semibold transition-colors duration-150 hover:bg-foreground hover:text-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           <MicrosoftMark />
           Continue with Microsoft 365

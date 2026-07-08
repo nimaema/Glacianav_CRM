@@ -24,6 +24,11 @@ square, everything ruled, type does the talking.
    (e.g. `BOARD / 11 CONTACTS / UPDATED 08 JUL`).
 7. **Motion is crisp.** 120–160ms color/opacity only. The single orchestrated moment is
    the poster-header reveal on page load. `prefers-reduced-motion` kills it all.
+8. **Full poster, not empty poster** (Nima's Gate-1 calibration: "fine but too
+   minimalistic"). Swiss ≠ sparse. Surfaces carry real structural weight: exposed
+   column grids, ink-filled blocks (footers, panels), area-filled diagrams, poster
+   type at genuinely large scale, tonal surface blocks against the paper. Restraint
+   lives in the palette and the rules, never in emptiness.
 
 ## Tokens (light)
 
