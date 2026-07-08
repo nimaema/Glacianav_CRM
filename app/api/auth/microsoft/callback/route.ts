@@ -13,6 +13,21 @@ function fail(origin: string, code: string) {
   return NextResponse.redirect(new URL(`/login?error=${code}`, origin));
 }
 
+async function logMicrosoftError(label: string, res: Response) {
+  let detail = "";
+  try {
+    const body = (await res.json()) as { error?: string; error_description?: string };
+    detail = [body.error, body.error_description].filter(Boolean).join(": ");
+  } catch {
+    detail = await res.text().catch(() => "");
+  }
+  console.error(`[microsoft-sso] ${label} failed`, {
+    status: res.status,
+    statusText: res.statusText,
+    detail: detail.slice(0, 600),
+  });
+}
+
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const origin = publicOrigin(req.url);
@@ -46,15 +61,24 @@ export async function GET(req: Request) {
       }),
     }
   );
-  if (!tokenRes.ok) return fail(origin, "sso_token");
+  if (!tokenRes.ok) {
+    await logMicrosoftError("token exchange", tokenRes);
+    return fail(origin, "sso_token");
+  }
   const tokens = (await tokenRes.json()) as { access_token?: string };
-  if (!tokens.access_token) return fail(origin, "sso_token");
+  if (!tokens.access_token) {
+    console.error("[microsoft-sso] token exchange returned no access token");
+    return fail(origin, "sso_token");
+  }
 
   // Identify the user via Microsoft Graph.
   const meRes = await fetch("https://graph.microsoft.com/v1.0/me", {
     headers: { Authorization: `Bearer ${tokens.access_token}` },
   });
-  if (!meRes.ok) return fail(origin, "sso_profile");
+  if (!meRes.ok) {
+    await logMicrosoftError("profile request", meRes);
+    return fail(origin, "sso_profile");
+  }
   const me = (await meRes.json()) as {
     mail?: string;
     userPrincipalName?: string;
