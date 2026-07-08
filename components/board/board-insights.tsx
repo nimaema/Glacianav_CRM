@@ -38,9 +38,9 @@ export function BoardInsights({ insights }: { insights: InsightsData }) {
                       {need.count}
                     </span>
                   </div>
-                  <div className="h-2 rounded-full bg-muted">
+                  <div className="h-2 bg-secondary">
                     <div
-                      className="h-2 rounded-full bg-primary"
+                      className="h-2 bg-foreground"
                       style={{ width: `${(need.count / maxNeed) * 100}%` }}
                     />
                   </div>
@@ -51,7 +51,7 @@ export function BoardInsights({ insights }: { insights: InsightsData }) {
         </Card>
 
         <Card title="Stage funnel" subtitle="Where contacts sit in the validation pipeline.">
-          <div className="mb-4 flex h-3 overflow-hidden rounded-full">
+          <div className="mb-4 flex h-3 overflow-hidden">
             {insights.funnel
               .filter((s) => s.count > 0)
               .map((s) => (
@@ -68,7 +68,7 @@ export function BoardInsights({ insights }: { insights: InsightsData }) {
           <div className="space-y-1.5">
             {insights.funnel.map((s) => (
               <div key={s.label} className="flex items-center gap-2.5">
-                <span className="size-2.5 rounded-[3px]" style={{ backgroundColor: s.color }} />
+                <span className="size-2.5" style={{ backgroundColor: s.color }} />
                 <span className="flex-1 text-[13px] text-foreground">{s.label}</span>
                 <span className="text-[13px] font-semibold tabular-nums text-foreground">
                   {s.count}
@@ -92,7 +92,7 @@ export function BoardInsights({ insights }: { insights: InsightsData }) {
                   {week.count > 0 ? week.count : ""}
                 </span>
                 <div
-                  className="w-full rounded-t-md bg-primary/80"
+                  className="w-full bg-[var(--chart-2)]"
                   style={{
                     height: `${Math.max(week.count > 0 ? 8 : 2, (week.count / maxWeek) * 100)}px`,
                   }}
@@ -109,7 +109,7 @@ export function BoardInsights({ insights }: { insights: InsightsData }) {
           title="Problem confirmation"
           subtitle="Evidence quality: how the audience responded when asked."
         >
-          <div className="mb-4 flex h-3 overflow-hidden rounded-full">
+          <div className="mb-4 flex h-3 overflow-hidden">
             {insights.problems
               .filter((s) => s.count > 0)
               .map((s) => (
@@ -126,7 +126,7 @@ export function BoardInsights({ insights }: { insights: InsightsData }) {
           <div className="space-y-1.5">
             {insights.problems.map((s) => (
               <div key={s.label} className="flex items-center gap-2.5">
-                <span className="size-2.5 rounded-[3px]" style={{ backgroundColor: s.color }} />
+                <span className="size-2.5" style={{ backgroundColor: s.color }} />
                 <span className="flex-1 text-[13px] text-foreground">{s.label}</span>
                 <span className="text-[13px] font-semibold tabular-nums text-foreground">
                   {s.count}
@@ -151,9 +151,9 @@ export function BoardInsights({ insights }: { insights: InsightsData }) {
                   {owner.name[0]}
                 </span>
                 <span className="w-24 truncate text-[13px] text-foreground">{owner.name}</span>
-                <div className="h-2 flex-1 rounded-full bg-muted">
+                <div className="h-2 flex-1 bg-secondary">
                   <div
-                    className="h-2 rounded-full"
+                    className="h-2"
                     style={{
                       width: `${(owner.count / maxOwner) * 100}%`,
                       backgroundColor: owner.color,
@@ -182,10 +182,12 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-lg border border-border p-5">
-      <h2 className="text-[14px] font-bold tracking-tight text-foreground">{title}</h2>
-      <p className="mb-4 text-[12px] text-muted-foreground">{subtitle}</p>
-      {children}
+    <section className="border border-border">
+      <div className="border-b border-border bg-secondary px-4 py-2.5">
+        <h2 className="type-legend text-foreground">{title}</h2>
+        <p className="mt-0.5 text-[12px] text-muted-foreground">{subtitle}</p>
+      </div>
+      <div className="p-4">{children}</div>
     </section>
   );
 }
